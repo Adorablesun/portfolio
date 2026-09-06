@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight, Asterisk, Plus } from 'lucide-react';
-import Image from 'next/image';
+/* Native image keeps this static portfolio independent of client image hydration. */
+/* eslint-disable next/no-img-element */
 import { portfolio, projects } from './portfolio';
 
 export default function Home() {
@@ -20,7 +21,7 @@ export default function Home() {
         <p className="draft-note">DESIGN PREVIEW <span>Sample projects demonstrate the layout. They are not finished portfolio work.</span></p>
         <div className="project-grid">{projects.map((project, i) => <article key={project.id} className={`project ${i === 0 ? 'featured' : ''}`}>
           <div className={`project-cover ${project.style}`}>
-            {project.image ? <Image src={project.image} alt="Sample abstract artwork: lime and chrome sculptural ribbons against a cobalt background" width={1536} height={1024} unoptimized priority /> : <div className="type-cover" aria-hidden="true"><span>{project.coverTop}</span><strong>{project.coverTitle}</strong><span>{project.coverBottom}</span></div>}
+            {project.image ? <img src={project.image} alt="Sample abstract artwork: lime and chrome sculptural ribbons against a cobalt background" width={1536} height={1024} fetchPriority="high" /> : <div className="type-cover" aria-hidden="true"><span>{project.coverTop}</span><strong>{project.coverTitle}</strong><span>{project.coverBottom}</span></div>}
             <span className="cover-label">{project.label}</span><span className="cover-number">0{i + 1}</span>
           </div>
           <div className="project-heading"><div><p className="project-category">{project.category}</p><h3>{project.title}</h3></div><span className="project-year">SAMPLE</span></div>
@@ -42,3 +43,4 @@ export default function Home() {
     </main>
   </>;
 }
+
