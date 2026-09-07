@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+:root { --font-geist-sans:'Geist Variable'; --font-geist-mono:'Geist Mono Variable'; }
 @theme inline { --color-background:var(--background); --color-foreground:var(--foreground); --font-sans:var(--font-geist-sans); --font-mono:var(--font-geist-mono); }
 :root { --background:#f8f9fb; --foreground:#17191c; --primary:#2448df; --primary-foreground:#fff; --muted:#eef0f4; --muted-foreground:#5b606c; --border:#d6d9e0; --ring:#2448df; --radius:.5rem; }
 * { box-sizing:border-box; }

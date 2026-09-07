@@ -19,12 +19,13 @@ A typography-led creative portfolio with a cool white canvas, cobalt accent, ove
 Research reviewed 6 September 2026. Visual styling is an original proposal, not a claim that a particular aesthetic is universally best.
 
 ## Technical foundation
-Semantic HTML rendered by React and TypeScript using the generated Vinext/Vite stack. CSS Grid, Flexbox, custom properties, and media queries implement the layout. Native details/summary supplies project expansion without client-side JavaScript. No database is required.
+Semantic HTML rendered by React and TypeScript using standalone Vite. CSS Grid, Flexbox, custom properties, and media queries implement the layout. Native details/summary supplies project expansion. GitHub Actions builds the static site for GitHub Pages. No database or GPT Sites runtime is required.
 
 - app/portfolio.ts: editable name, introduction, about, disciplines, email, and projects.
 - app/page.tsx: page sections and reusable project rendering.
 - app/globals.css: colour, type, spacing, responsive layout, and motion settings.
-- app/layout.tsx: document metadata. Indexing is disabled during the sample-content stage.
+- app/main.tsx: React entry point and bundled fonts.
+- index.html: document metadata. Indexing is disabled during the sample-content stage.
 
 Run `npm install`, then `npm run dev`. Use `npm run build` for the production build.
 
