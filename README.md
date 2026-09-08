@@ -21,11 +21,16 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 
 - `app/portfolio.ts`: biography, contact, and projects.
 - `app/page.tsx`: sections and project cards.
+- `app/AcademicPage.tsx`: academic timeline and internship background.
+- `app/SiteHeader.tsx`: navigation shared by both pages.
 - `app/globals.css`: visual design and motion.
 - `app/main.tsx`: React entry point and bundled fonts.
 - `index.html`: title, metadata, and favicon.
 - `public/images/`: portfolio media.
 - `DESIGN.md`: design rationale and content guide.
+- `PROJECTS-TO-PREPARE.md`: recommended multimedia projects and asset checklist.
+
+The academic page is published at `academic/`. Its separate HTML entry makes direct links and refreshes work on GitHub Pages without server-side routing.
 
 Current content is labelled as sample work. Replace it before treating this as a finished professional portfolio. Search indexing is disabled in `index.html` during this draft stage.
 

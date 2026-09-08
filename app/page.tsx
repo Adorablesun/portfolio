@@ -1,14 +1,12 @@
 import { ArrowDown, ArrowUpRight, Asterisk, Plus } from 'lucide-react';
 import { portfolio, projects } from './portfolio';
 import OpeningSequence from './OpeningSequence';
+import SiteHeader from './SiteHeader';
 
 export default function Home() {
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
-    <header className="site-header shell">
-      <a className="wordmark" href="#main" aria-label="Portfolio home"><Asterisk aria-hidden="true" />{portfolio.name}<span>.</span></a>
-      <nav aria-label="Main navigation"><a href="#work">Work <span>01</span></a><a href="#about">About <span>02</span></a><a href="#contact">Let’s talk <ArrowUpRight size={17} aria-hidden="true" /></a></nav>
-    </header>
+    <SiteHeader />
     <main id="main">
       <section className="hero shell" aria-labelledby="intro-heading">
         <div className="eyebrow"><span className="small-dot" /> MULTIMEDIA DESIGN PORTFOLIO</div>
@@ -37,7 +35,7 @@ export default function Home() {
       </section>
       <section id="about" className="about shell" aria-labelledby="about-heading">
         <h2 className="section-label" id="about-heading"><span className="index">02 /</span> Behind the work</h2>
-        <div><h3>A curious mind.<br />Many ways to <span className="serif-word">create.</span></h3><p className="about-copy">{portfolio.about}</p><div className="disciplines" aria-label="Example creative disciplines">{portfolio.disciplines.map(d => <span key={d}>{d}</span>)}</div><p className="small-note">Draft introduction and disciplines — ready to personalise.</p></div>
+        <div><h3>A curious mind.<br />Many ways to <span className="serif-word">create.</span></h3><p className="about-copy">{portfolio.about}</p><a className="academic-link" href={`${import.meta.env.BASE_URL}academic/`}>Explore my academic journey <ArrowUpRight size={18} aria-hidden="true" /></a><div className="disciplines" aria-label="Example creative disciplines">{portfolio.disciplines.map(d => <span key={d}>{d}</span>)}</div><p className="small-note">Example disciplines — ready to personalise.</p></div>
       </section>
       <section id="contact" className="contact" aria-labelledby="contact-heading"><div className="shell"><div className="contact-top"><p className="section-label"><span className="index">03 /</span> Get in touch</p><Asterisk size={52} strokeWidth={1.25} aria-hidden="true" /></div><h2 id="contact-heading">Have an idea?<br />Let’s make it <span className="serif-word">happen.</span></h2>{portfolio.email ? <a className="email-link" href={`mailto:${portfolio.email}`}>{portfolio.email}<ArrowUpRight aria-hidden="true" /></a> : <p className="contact-placeholder">Your email and creative profiles will live here.</p>}<footer><span>{portfolio.name} · Multimedia design</span><span>Portfolio framework / 2026</span><a href="#main">Back to top ↑</a></footer></div></section>
     </main>

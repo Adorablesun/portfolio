@@ -19,6 +19,9 @@ a:focus-visible,summary:focus-visible { outline:3px solid var(--primary); outlin
 nav { display:flex; align-items:center; gap:38px; font-size:.875rem; }
 nav a { display:flex; align-items:center; gap:6px; min-height:44px; }
 nav a:hover { color:var(--primary); }
+nav a[aria-current='page'] { color:var(--primary); text-decoration:underline; text-underline-offset:7px; }
+.academic-link { display:inline-flex; align-items:center; gap:8px; color:var(--primary); font-size:.9375rem; padding-block:8px; }
+@media(max-width:1000px) { .site-header { flex-wrap:wrap; } .site-header nav { flex-wrap:wrap; column-gap:24px; row-gap:4px; } }
 nav a span { color:var(--muted-foreground); font-size:.75rem; margin-top:-7px; }
 .hero { padding-top:65px; padding-bottom:66px; }
 .eyebrow { display:flex; align-items:center; gap:10px; font-size:.75rem; letter-spacing:.12em; font-weight:550; }

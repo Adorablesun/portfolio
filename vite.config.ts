@@ -8,4 +8,12 @@ export default defineConfig({
   plugins: [react()],
   css: { postcss: { plugins: [tailwindcss()] } },
   resolve: { alias: { '@': fileURLToPath(new URL('.', import.meta.url)) } },
+  build: {
+    rolldownOptions: {
+      input: {
+        portfolio: fileURLToPath(new URL('./index.html', import.meta.url)),
+        academic: fileURLToPath(new URL('./academic/index.html', import.meta.url)),
+      },
+    },
+  },
 });
