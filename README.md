@@ -29,6 +29,12 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 
 Current content is labelled as sample work. Replace it before treating this as a finished professional portfolio. Search indexing is disabled in `index.html` during this draft stage.
 
-## Planned next design phase
+## Opening animation
 
-Interactive 3D, richer motion graphics, scroll choreography, and a stronger multimedia art direction. These enhancements should respect reduced-motion preferences and include usable mobile fallbacks.
+The homepage plays a 5.5-second 3D title sequence with pointer-responsive chrome geometry, orbital rings, and kinetic typography. Skip or press Escape to enter immediately; use Replay intro to watch again. Direct section links and reduced-motion preferences bypass the entrance. WebGL loads separately and is released when the sequence closes. A CSS fallback preserves the title sequence if 3D is unavailable. No audio plays.
+
+Implementation: `app/OpeningSequence.tsx`, `app/opening-scene.ts`, and `app/opening.css`. Run `npm test` for the lifecycle and accessibility-behavior checks.
+
+## Next design phase
+
+Extend the opening's art direction into the hero and project transitions, add scroll choreography, and replace sample content with original work.

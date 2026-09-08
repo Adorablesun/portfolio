@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight, Asterisk, Plus } from 'lucide-react';
 import { portfolio, projects } from './portfolio';
+import OpeningSequence from './OpeningSequence';
 
 export default function Home() {
   return <>
@@ -13,6 +14,7 @@ export default function Home() {
         <div className="eyebrow"><span className="small-dot" /> MULTIMEDIA DESIGN PORTFOLIO</div>
         <h1 id="intro-heading">Ideas in motion.<br />Design with <span className="serif-word">feeling.</span><span className="hero-star" aria-hidden="true">✳</span></h1>
         <div className="hero-bottom"><p>{portfolio.intro}</p><a className="round-link" href="#work">Explore the work <span><ArrowDown size={20} aria-hidden="true" /></span></a></div>
+        <OpeningSequence />
       </section>
       <section id="work" className="work shell" aria-labelledby="work-heading">
         <div className="section-top"><h2 id="work-heading"><span className="index">01 /</span> Selected work</h2><p>Different mediums. One creative perspective.</p></div>
