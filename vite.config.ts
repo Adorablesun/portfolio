@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         portfolio: fileURLToPath(new URL('./index.html', import.meta.url)),
         academic: fileURLToPath(new URL('./academic/index.html', import.meta.url)),
+        personal: fileURLToPath(new URL('./personal/index.html', import.meta.url)),
       },
     },
   },

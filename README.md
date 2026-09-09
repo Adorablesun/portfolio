@@ -22,6 +22,7 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 - `app/portfolio.ts`: biography, contact, and projects.
 - `app/page.tsx`: sections and project cards.
 - `app/AcademicPage.tsx`: academic timeline and internship background.
+- `app/PersonalPage.tsx`: personal introduction and contact channels.
 - `app/SiteHeader.tsx`: navigation shared by both pages.
 - `app/globals.css`: visual design and motion.
 - `app/main.tsx`: React entry point and bundled fonts.
@@ -31,6 +32,8 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 - `PROJECTS-TO-PREPARE.md`: recommended multimedia projects and asset checklist.
 
 The academic page is published at `academic/`. Its separate HTML entry makes direct links and refreshes work on GitHub Pages without server-side routing.
+
+The personal contact page is published at `personal/`. Public email, WhatsApp, Instagram, and LinkedIn details live in `app/portfolio.ts`; unavailable channels stay visibly disabled rather than linking to placeholder destinations.
 
 The Academic Journey has a scroll-drawn route from education and internship milestones into a proposed future: UI/UX, AR/VR, AI-assisted experiences, then creative technology and leadership. These future chapters are labelled as aspirations. Cards drift, sharpen, and settle as they cross the reading line while markers, margin notes, and large chapter words move at different depths. `app/JourneyPath.tsx` measures the actual card positions, including expanded project prompts, so the path stays aligned on mobile and desktop. Reduced-motion preferences show the complete route and all cards immediately. The academic page has its own brief, non-blocking entrance reveal.
 

@@ -3,8 +3,14 @@ export const portfolio = {
   name: 'Ong Yu Yang',
   intro: 'Exploring the space between visual identity, moving images, and digital experiences.',
   about: 'I’m Ong Yu Yang, a student at Asia Pacific University, currently in Year 3, Semester 2 through January 2027. My journey also includes an internship at ZTE Corporation Malaysia. I explore multimedia through visual identity, moving images, and digital experiences.',
-  email: '',
   disciplines: ['Visual identity', 'Motion & video', 'Editorial design', 'Digital experiences'],
+};
+// Public contact details used by the personal page.
+export const contactProfiles = {
+  email: 'ongyuyang1@gmail.com',
+  whatsapp: '+60 16 690 9509',
+  instagram: 'https://www.instagram.com/oyy_0208/',
+  linkedin: 'https://www.linkedin.com/in/ong-yu-yang',
 };
 export const academicJourney = [
   { stage: 'Primary education', name: 'SJK(C) Kong Hoe', description: 'Primary school.', current: false },
