@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, Sparkles } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { PointerEvent, ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
 
@@ -10,6 +10,23 @@ type Channel = {
   icon: ReactNode;
   note: string;
 };
+
+function moveIdentity(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const card = event.currentTarget;
+  const bounds = card.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width;
+  const y = (event.clientY - bounds.top) / bounds.height;
+  card.style.setProperty('--pointer-x', `${x * 100}%`);
+  card.style.setProperty('--pointer-y', `${y * 100}%`);
+  card.style.setProperty('--identity-tilt-x', `${(0.5 - y) * 7}deg`);
+  card.style.setProperty('--identity-tilt-y', `${(x - 0.5) * 7}deg`);
+}
+
+function resetIdentity(event: PointerEvent<HTMLElement>) {
+  event.currentTarget.style.setProperty('--identity-tilt-x', '0deg');
+  event.currentTarget.style.setProperty('--identity-tilt-y', '0deg');
+}
 
 const channels: Channel[] = [
   {
@@ -70,8 +87,15 @@ export default function PersonalPage() {
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
-        <aside className="personal-card" aria-label="About Ong Yu Yang">
-          <div className="personal-monogram" aria-hidden="true"><span>OY</span><span>YANG</span></div>
+        <aside className="personal-card" aria-label="Interactive identity card for Ong Yu Yang" onPointerMove={moveIdentity} onPointerLeave={resetIdentity}>
+          <button className="identity-scene" type="button" aria-label="Reveal Ong Yu Yang’s digital identity">
+            <div className="identity-orbit orbit-one" />
+            <div className="identity-orbit orbit-two" />
+            <div className="identity-core"><span>OY</span><small>CREATIVE SIGNAL</small></div>
+            <div className="identity-shards">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
+            <div className="identity-scan" />
+            <span className="identity-hint">MOVE CURSOR / REVEAL</span>
+          </button>
           <div className="personal-card-copy"><span className="personal-status"><i /> CURRENTLY LEARNING & CREATING</span><strong>{portfolio.name}</strong><p>Year 3 · Semester 2<br />Asia Pacific University</p></div>
         </aside>
       </section>

@@ -33,7 +33,7 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 
 The academic page is published at `academic/`. Its separate HTML entry makes direct links and refreshes work on GitHub Pages without server-side routing.
 
-The personal contact page is published at `personal/`. Public email, WhatsApp, Instagram, and LinkedIn details live in `app/portfolio.ts`; unavailable channels stay visibly disabled rather than linking to placeholder destinations.
+The personal contact page is published at `personal/`. Its OY identity card uses a cursor-following glow and a fractured reveal on hover, with keyboard, touch-focus, and reduced-motion behavior. Public email, WhatsApp, Instagram, and LinkedIn details live in `app/portfolio.ts`; unavailable channels stay visibly disabled rather than linking to placeholder destinations.
 
 The Academic Journey has a scroll-drawn route from education and internship milestones into a proposed future: UI/UX, AR/VR, AI-assisted experiences, then creative technology and leadership. These future chapters are labelled as aspirations. Cards drift, sharpen, and settle as they cross the reading line while markers, margin notes, and large chapter words move at different depths. `app/JourneyPath.tsx` measures the actual card positions, including expanded project prompts, so the path stays aligned on mobile and desktop. Reduced-motion preferences show the complete route and all cards immediately. The academic page has its own brief, non-blocking entrance reveal.
 
