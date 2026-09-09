@@ -32,6 +32,8 @@ Push this repository to GitHub. In **Settings → Pages**, choose **GitHub Actio
 
 The academic page is published at `academic/`. Its separate HTML entry makes direct links and refreshes work on GitHub Pages without server-side routing.
 
+The Academic Journey has a scroll-drawn route from education and internship milestones into a proposed future: UI/UX, AR/VR, AI-assisted experiences, then creative technology and leadership. These future chapters are labelled as aspirations. `app/JourneyPath.tsx` measures the actual card positions, including expanded project prompts, so the path stays aligned on mobile and desktop. Reduced-motion preferences show the complete route and all cards immediately. The academic page has its own brief, non-blocking entrance reveal.
+
 Current content is labelled as sample work. Replace it before treating this as a finished professional portfolio. Search indexing is disabled in `index.html` during this draft stage.
 
 ## Opening animation

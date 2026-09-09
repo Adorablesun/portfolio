@@ -12,6 +12,13 @@ export const academicJourney = [
   { stage: 'University', name: 'Asia Pacific University', description: 'Year 3, Semester 2', detail: 'Current semester through January 2027.', current: true },
   { stage: 'Industry experience', name: 'ZTE Corporation Malaysia', description: 'Internship', current: false },
 ];
+// Aspirations, not completed qualifications or scheduled roles.
+export const futureJourney = [
+  { stage: 'First ambition', name: 'UI / UX design', description: 'Design digital products that are intuitive, accessible, and a pleasure to use.', focus: 'User research · Interaction design · Prototyping', project: 'Build a research-led app case study, from interviews and user flows to a tested prototype.' },
+  { stage: 'Next exploration', name: 'Immersive AR / VR', description: 'Take experiences beyond the screen, into spaces people can move through and interact with.', focus: 'Spatial interfaces · 3D storytelling · XR prototyping', project: 'Prototype an immersive exhibition or an AR experience with a clear, useful interaction.' },
+  { stage: 'Then, new possibilities', name: 'AI-assisted experiences', description: 'Explore how AI can support creativity and help people accomplish something meaningful.', focus: 'Human–AI interaction · Generative media · Responsible design', project: 'Design an AI creative assistant that gives people clear control, useful feedback, and room to revise.' },
+  { stage: 'Long-term direction', name: 'Creative technology & leadership', description: 'Bring design, immersive media, and AI together to lead thoughtful experiences across disciplines.', focus: 'Art direction · Experience strategy · Collaboration', project: 'Lead a collaborative concept that combines a strong story, purposeful interaction, and a distinctive visual identity.' },
+];
 export const projects = [
   { id: 'form', title: 'Form / in motion', category: 'ART DIRECTION · MULTIMEDIA', label: 'CONCEPT ARTWORK', style: 'form-cover', image: '/images/form-study.png', description: 'A sample visual study exploring form, material, and colour.', finalPrompt: 'Add the final artwork and relevant close-ups. If this becomes an animation, include a captioned video with playback controls.' },
   { id: 'frame', title: 'Frame by frame', category: 'MOTION · VIDEO', label: 'TYPOGRAPHY STUDY', style: 'frame-cover', coverTop: 'A STUDY IN RHYTHM', coverTitle: 'Frame\nby frame.', coverBottom: 'STILL → SEQUENCE → STORY', description: 'A sample cover for a motion piece, short film, or video project.', finalPrompt: 'Embed your video with controls, captions or a transcript, and a poster frame. Add selected storyboard frames.' },
