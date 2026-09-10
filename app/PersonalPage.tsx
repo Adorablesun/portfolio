@@ -1,5 +1,5 @@
-import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, RotateCw, Sparkles } from 'lucide-react';
-import { useState, type PointerEvent, type ReactNode } from 'react';
+import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, MoveHorizontal, Sparkles } from 'lucide-react';
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
 
@@ -127,7 +127,48 @@ function ChannelCard({ channel, index }: { channel: Channel; index: number }) {
 export default function PersonalPage() {
   const base = import.meta.env.BASE_URL;
   const missing = channels.filter(channel => !channel.href).length;
-  const [cardFlipped, setCardFlipped] = useState(false);
+  const [cardAngle, setCardAngle] = useState(0);
+  const cardDrag = useRef<{ pointerId: number; startX: number; startAngle: number; delta: number } | null>(null);
+  const cardBackVisible = Math.abs(Math.round(cardAngle / 180)) % 2 === 1;
+  const cardStyle = { '--card-rest-angle': `${cardAngle}deg` } as CSSProperties;
+
+  const startCardDrag = (event: PointerEvent<HTMLElement>) => {
+    if (!event.isPrimary) return;
+    cardDrag.current = { pointerId: event.pointerId, startX: event.clientX, startAngle: cardAngle, delta: 0 };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.classList.add('is-dragging');
+    event.currentTarget.style.setProperty('--identity-tilt-x', '0deg');
+    event.currentTarget.style.setProperty('--identity-tilt-y', '0deg');
+  };
+
+  const moveCard = (event: PointerEvent<HTMLElement>) => {
+    const drag = cardDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) {
+      moveIdentity(event);
+      return;
+    }
+    const width = Math.max(event.currentTarget.getBoundingClientRect().width, 1);
+    drag.delta = Math.max(-210, Math.min(210, ((event.clientX - drag.startX) / width) * 230));
+    event.currentTarget.style.setProperty('--card-drag-angle', `${drag.delta}deg`);
+  };
+
+  const finishCardDrag = (event: PointerEvent<HTMLElement>) => {
+    const drag = cardDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const stage = event.currentTarget;
+    const nextAngle = Math.abs(drag.delta) < 24 ? drag.startAngle : Math.round((drag.startAngle + drag.delta) / 180) * 180;
+    stage.classList.remove('is-dragging');
+    setCardAngle(nextAngle);
+    stage.style.setProperty('--card-drag-angle', '0deg');
+    if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+    cardDrag.current = null;
+  };
+
+  const turnCardWithKeyboard = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    setCardAngle(value => value + (event.key === 'ArrowRight' ? 180 : -180));
+  };
 
   return <>
     <a className="skip-link" href="#main">Skip to introduction</a>
@@ -137,7 +178,8 @@ export default function PersonalPage() {
         <div className="personal-intro">
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
           <h1 id="personal-title">
-            <span className="intro-typewriter">Hi, I’m</span>{' '}<span className="serif-word name-typewriter">Yu Yang.</span>
+            <span className="intro-typewriter"><span>Hi, I’m</span><i aria-hidden="true" /></span>{' '}
+            <span className="serif-word name-typewriter"><span>Yu Yang.</span><i aria-hidden="true" /></span>
             <br />
             <span className="connect-title-reveal">
               <span className="connect-word connect-word-left">Let’s</span>
@@ -148,10 +190,9 @@ export default function PersonalPage() {
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
-        <aside className="personal-card-stage" aria-label="Flippable 3D identity card for Ong Yu Yang" onPointerMove={moveIdentity} onPointerLeave={resetIdentity}>
-          <div className={`personal-card${cardFlipped ? ' is-flipped' : ''}`}>
+        <aside className="personal-card-stage" aria-label="3D identity card. Drag horizontally to turn it. Use left and right arrow keys when focused." role="slider" aria-valuemin={0} aria-valuemax={1} aria-valuenow={cardBackVisible ? 1 : 0} aria-valuetext={cardBackVisible ? 'Back of card' : 'Front of card'} tabIndex={0} onPointerDown={startCardDrag} onPointerMove={moveCard} onPointerUp={finishCardDrag} onPointerCancel={finishCardDrag} onPointerLeave={resetIdentity} onKeyDown={turnCardWithKeyboard}>
+          <div className="personal-card" style={cardStyle}>
             <div className="personal-card-face personal-card-front">
-              <button className="card-face-trigger" type="button" aria-label="Turn identity card to the back" aria-hidden={cardFlipped} tabIndex={cardFlipped ? -1 : 0} onClick={() => setCardFlipped(true)} />
               <div className="identity-scene" aria-hidden="true">
                 <div className="identity-orbit orbit-one" />
                 <div className="identity-orbit orbit-two" />
@@ -163,12 +204,11 @@ export default function PersonalPage() {
                 </div>
                 <div className="identity-shards">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
                 <div className="identity-scan" />
-                <span className="identity-hint">HOVER TO REVEAL / CLICK TO TURN</span>
+                <span className="identity-hint">HOVER TO REVEAL / DRAG TO TURN</span>
               </div>
-              <div className="personal-card-copy"><span className="personal-status"><i /> CURRENTLY LEARNING & CREATING</span><strong>{portfolio.name}</strong><p>Year 3 · Semester 2<br />Asia Pacific University</p></div>
+              <div className="personal-card-copy"><span className="personal-status"><i /> CURRENTLY LEARNING & CREATING</span><strong>{portfolio.name}</strong></div>
             </div>
             <div className="personal-card-face personal-card-rear">
-              <button className="card-face-trigger" type="button" aria-label="Turn identity card to the front" aria-hidden={!cardFlipped} tabIndex={cardFlipped ? 0 : -1} onClick={() => setCardFlipped(false)} />
               <span className="rear-corner">OY / 01</span>
               <div className="rear-orbit" aria-hidden="true"><i /><i /><i /></div>
               <div className="rear-monogram"><span>OY</span><small>DIGITAL IDENTITY</small></div>
@@ -180,9 +220,7 @@ export default function PersonalPage() {
             <i className="card-edge card-edge-top" aria-hidden="true" />
             <i className="card-edge card-edge-bottom" aria-hidden="true" />
           </div>
-          <button className="card-turn-control" type="button" onClick={() => setCardFlipped(value => !value)} aria-pressed={cardFlipped}>
-            <RotateCw size={14} aria-hidden="true" /> {cardFlipped ? 'SHOW FRONT' : 'TURN TO BACK'}
-          </button>
+          <span className="card-drag-hint"><MoveHorizontal size={15} aria-hidden="true" /> DRAG TO TURN · {cardBackVisible ? 'BACK' : 'FRONT'}</span>
         </aside>
       </section>
 

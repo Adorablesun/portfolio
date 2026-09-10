@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import PersonalPage from './PersonalPage';
 
 let container: HTMLDivElement;
@@ -9,6 +9,9 @@ let root: Root;
 
 beforeEach(() => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  HTMLElement.prototype.setPointerCapture = vi.fn();
+  HTMLElement.prototype.releasePointerCapture = vi.fn();
+  HTMLElement.prototype.hasPointerCapture = vi.fn(() => true);
   container = document.createElement('div');
   document.body.appendChild(container);
   root = createRoot(container);
@@ -20,22 +23,30 @@ afterEach(async () => {
 });
 
 describe('personal identity card', () => {
-  it('turns to its reverse and back from either face', async () => {
+  it('turns continuously by horizontal drag and supports arrow keys', async () => {
     await act(async () => root.render(<PersonalPage />));
-    const card = container.querySelector('.personal-card') as HTMLElement;
-    const front = container.querySelector('[aria-label="Turn identity card to the back"]') as HTMLButtonElement;
-    const rear = container.querySelector('[aria-label="Turn identity card to the front"]') as HTMLButtonElement;
+    const stage = container.querySelector('.personal-card-stage') as HTMLElement;
+    Object.defineProperty(stage, 'getBoundingClientRect', { value: () => ({ width: 400 }) });
+    const pointer = (type: string, clientX: number) => {
+      const event = new Event(type, { bubbles: true });
+      Object.defineProperties(event, {
+        clientX: { value: clientX },
+        isPrimary: { value: true },
+        pointerId: { value: 7 },
+      });
+      stage.dispatchEvent(event);
+    };
 
-    expect(card.classList.contains('is-flipped')).toBe(false);
-    expect(front.tabIndex).toBe(0);
-    expect(rear.tabIndex).toBe(-1);
+    expect(stage.getAttribute('aria-valuetext')).toBe('Front of card');
 
-    await act(async () => front.click());
-    expect(card.classList.contains('is-flipped')).toBe(true);
-    expect(front.tabIndex).toBe(-1);
-    expect(rear.tabIndex).toBe(0);
+    await act(async () => {
+      pointer('pointerdown', 100);
+      pointer('pointermove', 300);
+      pointer('pointerup', 300);
+    });
+    expect(stage.getAttribute('aria-valuetext')).toBe('Back of card');
 
-    await act(async () => rear.click());
-    expect(card.classList.contains('is-flipped')).toBe(false);
+    await act(async () => stage.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })));
+    expect(stage.getAttribute('aria-valuetext')).toBe('Front of card');
   });
 });
