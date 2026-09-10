@@ -55,7 +55,8 @@
 .journey-head-aura { transform-box:fill-box; transform-origin:center; animation:journey-pulse 1.5s ease-in-out infinite; }
 .journey-stops { list-style:none; padding:38px 0 0; margin:0; }
 .journey-row { position:relative; z-index:2; display:flex; align-items:center; min-height:340px; padding-block:40px; scroll-margin-top:90px; }
-.journey-card { width:calc(50% - 88px); padding:30px; border:1px solid var(--border); border-radius:14px; background:var(--background); position:relative; will-change:transform,filter; }
+.journey-card { width:calc(50% - 88px); padding:30px; border:1px solid var(--border); border-radius:14px; background:var(--background); position:relative; overflow:hidden; will-change:transform,filter; }
+.journey-card::after { content:''; position:absolute; inset:-30%; z-index:3; pointer-events:none; opacity:0; transform:translateX(-85%) rotate(12deg); background:linear-gradient(90deg,transparent 25%,#ffffff78 50%,transparent 75%); }
 .on-right .journey-card { margin-left:auto; }
 .journey-marker { width:42px; height:42px; border-radius:50%; position:absolute; left:calc(50% - 21px); top:calc(50% - 21px); background:var(--background); border:1px solid #bbc5df; display:flex; align-items:center; justify-content:center; color:var(--primary); font: .75rem var(--font-geist-mono),monospace; z-index:2; transform:scale(var(--marker-scale,1)); transition:background .35s,color .35s,box-shadow .35s; will-change:transform; }
 .on-left>.journey-marker { left:calc(50% + 13px); }
@@ -88,14 +89,17 @@
 .journey-end>span:last-child { font-size:.875rem; color:var(--muted-foreground); line-height:1.8; }
 .journey-route[data-enhanced] .journey-row .journey-card { opacity:0; transform:translateY(38px) rotate(-2deg); transition:opacity .7s ease; }
 .journey-route[data-enhanced] .on-right .journey-card { transform:translateY(38px) rotate(2deg); }
-.journey-route[data-enhanced] .journey-row.is-visible .journey-card { opacity:1; transform:translate3d(var(--scroll-x,0),var(--scroll-y,0),0) scale(var(--scroll-scale,1)) rotate(var(--scroll-rotate,0deg)); filter:blur(var(--scroll-blur,0)); }
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card { opacity:1; transform:translate3d(var(--scroll-x,0),var(--scroll-y,0),0) scale(var(--scroll-scale,1)) rotate(var(--scroll-rotate,0deg)); filter:blur(var(--scroll-blur,0)); transition:opacity .7s ease,filter .24s ease,border-color .25s ease,box-shadow .3s ease; }
 .journey-route[data-enhanced] .journey-row.is-visible .journey-card:hover,
-.journey-route[data-enhanced] .journey-row.is-visible .journey-card:focus-within { opacity:1; transform:translate3d(0,-5px,0) scale(1) rotate(0)!important; filter:none!important; z-index:4; border-color:#8297ef; box-shadow:0 22px 65px #2448df1a; transition:transform .28s cubic-bezier(.16,1,.3,1),filter .18s ease,border-color .25s ease,box-shadow .25s ease; }
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card:focus-within { opacity:1; filter:none!important; z-index:4; border-color:#8297ef; box-shadow:0 16px 48px #2448df14,inset 0 0 0 1px #2448df12; }
 .journey-route[data-enhanced] .journey-row.is-future.is-visible .journey-card:hover,
-.journey-route[data-enhanced] .journey-row.is-future.is-visible .journey-card:focus-within { border-color:#8270ea; box-shadow:0 22px 70px #5142a52e; }
+.journey-route[data-enhanced] .journey-row.is-future.is-visible .journey-card:focus-within { border-color:#8270ea; box-shadow:0 16px 52px #5142a521,inset 0 0 0 1px #8270ea1f; }
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card:hover::after,
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card:focus-within::after { animation:journey-card-focus-sweep .72s cubic-bezier(.16,1,.3,1) both; }
 @keyframes academic-arrival { from { opacity:0; transform:translateY(45px); filter:blur(8px); } to { opacity:1; transform:none; filter:blur(0); } }
 @keyframes journey-nudge { 50% { transform:translateY(7px); } }
 @keyframes journey-pulse { 50% { transform:scale(1.65); opacity:.04; } }
+@keyframes journey-card-focus-sweep { 0% { opacity:0; transform:translateX(-85%) rotate(12deg); } 24% { opacity:.55; } 100% { opacity:0; transform:translateX(85%) rotate(12deg); } }
 @media(max-width:850px) { .journey-card { width:calc(50% - 50px); padding:24px; } .journey-margin-note { max-width:130px; line-height:1.8; left:calc(50% + 65px); } .on-right .journey-margin-note { right:calc(50% + 65px); } .on-left>.journey-marker,.on-right>.journey-marker { left:calc(50% - 21px); } }
 @media(max-width:620px) {
   .journey-3d-stage[data-ready] { opacity:.4; }
