@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, MoveHorizontal, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, MessageCircle, MoveHorizontal, Sparkles } from 'lucide-react';
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
@@ -11,6 +11,14 @@ type Channel = {
   icon: ReactNode;
   note: string;
 };
+
+function InstagramIcon() {
+  return <svg className="instagram-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="5" />
+    <circle cx="12" cy="12" r="4.1" />
+    <circle cx="17.5" cy="6.7" r="1" fill="currentColor" stroke="none" />
+  </svg>;
+}
 
 function moveChannel(event: PointerEvent<HTMLElement>) {
   if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -68,7 +76,7 @@ const channels: Channel[] = [
     label: 'Instagram',
     detail: contactProfiles.instagram ? '@oyy_0208' : 'Profile link needed',
     href: contactProfiles.instagram,
-    icon: <Camera aria-hidden="true" />,
+    icon: <InstagramIcon />,
     note: 'For visual experiments and work in progress',
   },
   {
@@ -96,7 +104,7 @@ function ChannelVisual({ type }: { type: Channel['key'] }) {
 
   if (type === 'instagram') return <div className="channel-visual visual-instagram" aria-hidden="true">
     <span className="aperture-ring"><i /><i /><i /><i /><i /><i /></span>
-    <span className="aperture-core"><Camera /></span>
+    <span className="aperture-core"><InstagramIcon /></span>
     <span className="aperture-count">08 / 24</span>
   </div>;
 
@@ -182,6 +190,12 @@ export default function PersonalPage() {
     <SiteHeader personal />
     <main id="main" className="personal-page">
       <section className="personal-hero shell" aria-labelledby="personal-title">
+        <div className="hero-connection-field" aria-hidden="true">
+          <span className="hero-connection-line" />
+          <span className="hero-connection-node node-one" /><span className="hero-connection-node node-two" /><span className="hero-connection-node node-three" /><span className="hero-connection-node node-four" /><span className="hero-connection-node node-five" />
+          <span className="hero-connection-packet packet-one" /><span className="hero-connection-packet packet-two" />
+          <span className="hero-connection-label">SIGNAL / CONNECTION ACTIVE</span>
+        </div>
         <div className="personal-intro">
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
           <h1 id="personal-title">
@@ -193,7 +207,6 @@ export default function PersonalPage() {
             <br />
             <span className="connect-title-reveal">
               <span className="connect-word connect-word-left">Let’s</span>
-              <span className="title-connection" aria-hidden="true"><i /><b /><i /></span>
               <span className="connect-word connect-word-right">connect.</span>
             </span>
           </h1>
