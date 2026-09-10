@@ -127,14 +127,14 @@ function ChannelCard({ channel, index }: { channel: Channel; index: number }) {
 export default function PersonalPage() {
   const base = import.meta.env.BASE_URL;
   const missing = channels.filter(channel => !channel.href).length;
-  const [cardAngle, setCardAngle] = useState(0);
-  const cardDrag = useRef<{ pointerId: number; startX: number; startAngle: number; delta: number } | null>(null);
-  const cardBackVisible = Math.abs(Math.round(cardAngle / 180)) % 2 === 1;
-  const cardStyle = { '--card-rest-angle': `${cardAngle}deg` } as CSSProperties;
+  const [cardRotation, setCardRotation] = useState({ x: 0, y: 0 });
+  const cardDrag = useRef<{ pointerId: number; startX: number; startY: number; startRotation: { x: number; y: number }; deltaX: number; deltaY: number } | null>(null);
+  const cardBackVisible = Math.abs(Math.round(cardRotation.y / 180)) % 2 === 1;
+  const cardStyle = { '--card-rest-x': `${cardRotation.x}deg`, '--card-rest-y': `${cardRotation.y}deg` } as CSSProperties;
 
   const startCardDrag = (event: PointerEvent<HTMLElement>) => {
     if (!event.isPrimary) return;
-    cardDrag.current = { pointerId: event.pointerId, startX: event.clientX, startAngle: cardAngle, delta: 0 };
+    cardDrag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, startRotation: cardRotation, deltaX: 0, deltaY: 0 };
     event.currentTarget.setPointerCapture(event.pointerId);
     event.currentTarget.classList.add('is-dragging');
     event.currentTarget.style.setProperty('--identity-tilt-x', '0deg');
@@ -147,27 +147,34 @@ export default function PersonalPage() {
       moveIdentity(event);
       return;
     }
-    const width = Math.max(event.currentTarget.getBoundingClientRect().width, 1);
-    drag.delta = Math.max(-210, Math.min(210, ((event.clientX - drag.startX) / width) * 230));
-    event.currentTarget.style.setProperty('--card-drag-angle', `${drag.delta}deg`);
+    const bounds = event.currentTarget.getBoundingClientRect();
+    drag.deltaY = ((event.clientX - drag.startX) / Math.max(bounds.width, 1)) * 230;
+    drag.deltaX = -((event.clientY - drag.startY) / Math.max(bounds.height, 1)) * 180;
+    event.currentTarget.style.setProperty('--card-drag-x', `${drag.deltaX}deg`);
+    event.currentTarget.style.setProperty('--card-drag-y', `${drag.deltaY}deg`);
   };
 
   const finishCardDrag = (event: PointerEvent<HTMLElement>) => {
     const drag = cardDrag.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     const stage = event.currentTarget;
-    const nextAngle = Math.abs(drag.delta) < 24 ? drag.startAngle : Math.round((drag.startAngle + drag.delta) / 180) * 180;
+    const moved = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) >= 5;
     stage.classList.remove('is-dragging');
-    setCardAngle(nextAngle);
-    stage.style.setProperty('--card-drag-angle', '0deg');
+    if (moved) setCardRotation({ x: Math.max(-68, Math.min(68, drag.startRotation.x + drag.deltaX)), y: drag.startRotation.y + drag.deltaY });
+    stage.style.setProperty('--card-drag-x', '0deg');
+    stage.style.setProperty('--card-drag-y', '0deg');
     if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
     cardDrag.current = null;
   };
 
   const turnCardWithKeyboard = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault();
-    setCardAngle(value => value + (event.key === 'ArrowRight' ? 180 : -180));
+    setCardRotation(value => {
+      if (event.key === 'ArrowRight') return { ...value, y: value.y + 180 };
+      if (event.key === 'ArrowLeft') return { ...value, y: value.y - 180 };
+      return { ...value, x: Math.max(-68, Math.min(68, value.x + (event.key === 'ArrowUp' ? 15 : -15))) };
+    });
   };
 
   return <>
@@ -193,7 +200,7 @@ export default function PersonalPage() {
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
-        <aside className="personal-card-stage" aria-label="3D identity card. Drag horizontally to turn it." onPointerDown={startCardDrag} onPointerMove={moveCard} onPointerUp={finishCardDrag} onPointerCancel={finishCardDrag} onPointerLeave={resetIdentity}>
+        <aside className="personal-card-stage" aria-label="3D identity card. Drag in any direction to rotate it." onPointerDown={startCardDrag} onPointerMove={moveCard} onPointerUp={finishCardDrag} onPointerCancel={finishCardDrag} onPointerLeave={resetIdentity}>
           <div className="personal-card" style={cardStyle}>
             <div className="personal-card-face personal-card-front">
               <div className="identity-scene" aria-hidden="true">
@@ -219,8 +226,8 @@ export default function PersonalPage() {
               <span className="rear-code">KUALA LUMPUR / 2026</span>
             </div>
           </div>
-          <input className="card-rotation-input" type="range" min="0" max="1" step="1" value={cardBackVisible ? 1 : 0} aria-label={`Card side: ${cardBackVisible ? 'back' : 'front'}. Use left and right arrow keys to turn.`} onChange={event => setCardAngle(Number(event.currentTarget.value) * 180)} onKeyDown={turnCardWithKeyboard} />
-          <span className="card-drag-hint"><MoveHorizontal size={15} aria-hidden="true" /> DRAG TO TURN · {cardBackVisible ? 'BACK' : 'FRONT'}</span>
+          <input className="card-rotation-input" type="range" min="0" max="1" step="1" value={cardBackVisible ? 1 : 0} aria-label={`Card side: ${cardBackVisible ? 'back' : 'front'}. Use all arrow keys to rotate.`} onChange={event => setCardRotation(value => ({ ...value, y: Number(event.currentTarget.value) * 180 }))} onKeyDown={turnCardWithKeyboard} />
+          <span className="card-drag-hint"><MoveHorizontal size={15} aria-hidden="true" /> DRAG ANY DIRECTION · {cardBackVisible ? 'BACK' : 'FRONT'}</span>
         </aside>
       </section>
 

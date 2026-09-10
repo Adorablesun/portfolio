@@ -26,11 +26,12 @@ describe('personal identity card', () => {
   it('turns continuously by horizontal drag and supports arrow keys', async () => {
     await act(async () => root.render(<PersonalPage />));
     const stage = container.querySelector('.personal-card-stage') as HTMLElement;
-    Object.defineProperty(stage, 'getBoundingClientRect', { value: () => ({ width: 400 }) });
-    const pointer = (type: string, clientX: number) => {
+    Object.defineProperty(stage, 'getBoundingClientRect', { value: () => ({ width: 400, height: 500 }) });
+    const pointer = (type: string, clientX: number, clientY = 100) => {
       const event = new Event(type, { bubbles: true });
       Object.defineProperties(event, {
         clientX: { value: clientX },
+        clientY: { value: clientY },
         isPrimary: { value: true },
         pointerId: { value: 7 },
       });
@@ -42,8 +43,8 @@ describe('personal identity card', () => {
 
     await act(async () => {
       pointer('pointerdown', 100);
-      pointer('pointermove', 300);
-      pointer('pointerup', 300);
+      pointer('pointermove', 420, 230);
+      pointer('pointerup', 420, 230);
     });
     expect(keyboardControl.getAttribute('aria-label')).toContain('back');
 
