@@ -89,6 +89,10 @@
 .journey-route[data-enhanced] .journey-row .journey-card { opacity:0; transform:translateY(38px) rotate(-2deg); transition:opacity .7s ease; }
 .journey-route[data-enhanced] .on-right .journey-card { transform:translateY(38px) rotate(2deg); }
 .journey-route[data-enhanced] .journey-row.is-visible .journey-card { opacity:1; transform:translate3d(var(--scroll-x,0),var(--scroll-y,0),0) scale(var(--scroll-scale,1)) rotate(var(--scroll-rotate,0deg)); filter:blur(var(--scroll-blur,0)); }
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card:hover,
+.journey-route[data-enhanced] .journey-row.is-visible .journey-card:focus-within { opacity:1; transform:translate3d(0,-5px,0) scale(1) rotate(0)!important; filter:none!important; z-index:4; border-color:#8297ef; box-shadow:0 22px 65px #2448df1a; transition:transform .28s cubic-bezier(.16,1,.3,1),filter .18s ease,border-color .25s ease,box-shadow .25s ease; }
+.journey-route[data-enhanced] .journey-row.is-future.is-visible .journey-card:hover,
+.journey-route[data-enhanced] .journey-row.is-future.is-visible .journey-card:focus-within { border-color:#8270ea; box-shadow:0 22px 70px #5142a52e; }
 @keyframes academic-arrival { from { opacity:0; transform:translateY(45px); filter:blur(8px); } to { opacity:1; transform:none; filter:blur(0); } }
 @keyframes journey-nudge { 50% { transform:translateY(7px); } }
 @keyframes journey-pulse { 50% { transform:scale(1.65); opacity:.04; } }
