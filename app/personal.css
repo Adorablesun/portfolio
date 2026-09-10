@@ -111,13 +111,17 @@
 .personal-values>p { margin:0; color:var(--muted-foreground); font:.7rem var(--font-geist-mono),monospace; letter-spacing:.08em; }
 .personal-values>div { display:flex; flex-wrap:wrap; gap:10px; }
 .personal-values span { border:1px solid var(--border); border-radius:999px; padding:11px 17px; font-size:.875rem; background:#fff; }
-.connect-section { position:relative; background:#101722; color:#f5f7fb; padding-top:clamp(65px,8vw,115px); }
-.connect-section::before { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 78% 20%,#3349bb4f,transparent 30%),linear-gradient(125deg,transparent 46%,#ffffff04 46%,#ffffff04 46.2%,transparent 46.2%); }
+.connect-section { position:relative; background:#f5f7fb; color:var(--foreground); padding-top:clamp(65px,8vw,115px); transition:background-color 1s cubic-bezier(.16,1,.3,1),color .8s ease; }
+.connect-section::before { content:''; position:absolute; inset:0; opacity:0; pointer-events:none; background:radial-gradient(circle at 78% 20%,#3349bb4f,transparent 30%),linear-gradient(125deg,transparent 46%,#ffffff04 46%,#ffffff04 46.2%,transparent 46.2%); transition:opacity 1.15s ease .08s; }
+.connect-section.is-dark { background:#101722; color:#f5f7fb; }
+.connect-section.is-dark::before { opacity:1; }
 .connect-section>.shell { position:relative; }
 .connect-heading { display:grid; grid-template-columns:1.2fr .8fr; gap:60px; align-items:end; padding-bottom:60px; }
-.connect-heading .eyebrow { color:#d9ed4b; }
+.connect-heading .eyebrow { color:var(--primary); transition:color .8s ease; }
+.connect-section.is-dark .connect-heading .eyebrow { color:#d9ed4b; }
 .connect-heading h2 { margin:28px 0 0; font-size:clamp(3.8rem,7vw,7rem); font-weight:470; letter-spacing:-.07em; line-height:.94; }
-.connect-heading>p { max-width:470px; margin:0 0 8px; color:#b9c2d1; line-height:1.8; }
+.connect-heading>p { max-width:470px; margin:0 0 8px; color:var(--muted-foreground); line-height:1.8; transition:color .8s ease; }
+.connect-section.is-dark .connect-heading>p { color:#b9c2d1; }
 .channel-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; perspective:1200px; }
 .channel-card { --channel-x:50%; --channel-y:50%; --channel-rx:0deg; --channel-ry:0deg; --channel-accent:#d9ed4b; position:relative; display:flex; min-height:350px; flex-direction:column; justify-content:space-between; overflow:hidden; isolation:isolate; border:1px solid #3d485a; border-radius:20px; padding:22px; color:#f5f7fb; background:linear-gradient(145deg,#17202e,#0b111b 72%); transform:rotateX(var(--channel-rx)) rotateY(var(--channel-ry)); transform-style:preserve-3d; transition:border-color .35s,box-shadow .35s,transform .16s ease,background .4s; }
 .channel-card::before { content:''; position:absolute; inset:0; z-index:-2; opacity:.34; pointer-events:none; background:linear-gradient(115deg,transparent 0 49.8%,#ffffff0d 50%,transparent 50.2%),repeating-linear-gradient(90deg,transparent 0 43px,#ffffff08 44px); }
@@ -187,7 +191,8 @@
 .channel-linkedin:hover .visual-linkedin>i,.channel-linkedin:focus-visible .visual-linkedin>i { background:#66a4ff; transform:scale(1.55); }
 .channel-linkedin:hover .visual-linkedin>i:nth-of-type(even),.channel-linkedin:focus-visible .visual-linkedin>i:nth-of-type(even) { transform:scale(1.55) translateY(-5px); }
 .contact-setup-note { margin:24px 0 0; color:#d9ed4b; font-size:.8rem; }
-.personal-footer { margin-top:80px; border-color:#445064; }
+.personal-footer { margin-top:80px; border-color:var(--border); transition:border-color .8s ease; }
+.connect-section.is-dark .personal-footer { border-color:#445064; }
 .personal-footer a { display:flex; align-items:center; gap:7px; }
 @keyframes intro-typing { from { clip-path:inset(-.2em 100% -.25em 0); } to { clip-path:inset(-.2em 0 -.25em 0); } }
 @keyframes intro-caret-track { from { left:0; } to { left:100%; } }
@@ -246,6 +251,7 @@
   .personal-footer { margin-top:55px; }
 }
 @media(prefers-reduced-motion:reduce) {
+  .connect-section,.connect-section::before,.connect-heading .eyebrow,.connect-heading>p,.personal-footer { transition:none; }
   .connection-ribbon,.ribbon-thread { animation:none; }
   .ribbon-light { display:none; }
   .personal-card-stage { transform:none; animation:none; }

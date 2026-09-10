@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, MessageCircle, MoveHorizontal, Sparkles } from 'lucide-react';
-import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
 import ConnectionRibbon from './ConnectionRibbon';
@@ -137,9 +137,26 @@ export default function PersonalPage() {
   const base = import.meta.env.BASE_URL;
   const missing = channels.filter(channel => !channel.href).length;
   const [cardRotation, setCardRotation] = useState({ x: 0, y: 0 });
+  const [connectActive, setConnectActive] = useState(false);
   const cardDrag = useRef<{ pointerId: number; startX: number; startY: number; startRotation: { x: number; y: number }; deltaX: number; deltaY: number } | null>(null);
+  const connectSection = useRef<HTMLElement | null>(null);
   const cardBackVisible = Math.abs(Math.round(cardRotation.y / 180)) % 2 === 1;
   const cardStyle = { '--card-rest-x': `${cardRotation.x}deg`, '--card-rest-y': `${cardRotation.y}deg` } as CSSProperties;
+
+  useEffect(() => {
+    const section = connectSection.current;
+    if (!section || !('IntersectionObserver' in window)) {
+      setConnectActive(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setConnectActive(entry.isIntersecting),
+      { rootMargin: '-35% 0px -35% 0px', threshold: 0 },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   const startCardDrag = (event: PointerEvent<HTMLElement>) => {
     if (!event.isPrimary) return;
@@ -245,7 +262,7 @@ export default function PersonalPage() {
         <div><span>UI / UX</span><span>Motion</span><span>AR / VR</span><span>AI + creativity</span></div>
       </section>
 
-      <section id="contact-channels" className="connect-section" aria-labelledby="connect-title">
+      <section ref={connectSection} id="contact-channels" className={`connect-section${connectActive ? ' is-dark' : ''}`} aria-labelledby="connect-title">
         <div className="shell">
           <div className="connect-heading">
             <div><p className="eyebrow"><Sparkles size={14} aria-hidden="true" /> OPEN THE CONVERSATION</p><h2 id="connect-title">Choose your<br /><span className="serif-word">way in.</span></h2></div>
