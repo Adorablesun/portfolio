@@ -23,56 +23,6 @@ const marginNotes = [
   'HUMAN + MACHINE',
   'BRING IT ALL TOGETHER',
 ];
-const chapterThemes = [
-  {
-    key: 'classroom',
-    label: 'FIRST CLASSROOM',
-    accent: '#3569c8',
-    soft: '#dce9ff',
-  },
-  {
-    key: 'school',
-    label: 'FINDING DIRECTION',
-    accent: '#20778c',
-    soft: '#d5f0f2',
-  },
-  {
-    key: 'university',
-    label: 'BUILDING SKILLS',
-    accent: '#2448df',
-    soft: '#dce3ff',
-  },
-  {
-    key: 'industry',
-    label: 'INTO INDUSTRY',
-    accent: '#16705f',
-    soft: '#d8eee9',
-  },
-  {
-    key: 'interface',
-    label: 'DESIGN FOR PEOPLE',
-    accent: '#d94f7e',
-    soft: '#f9dfe8',
-  },
-  {
-    key: 'spatial',
-    label: 'BEYOND THE SCREEN',
-    accent: '#7458e8',
-    soft: '#e5dfff',
-  },
-  {
-    key: 'intelligence',
-    label: 'HUMAN + MACHINE',
-    accent: '#2877bf',
-    soft: '#d9edff',
-  },
-  {
-    key: 'horizon',
-    label: 'THE OPEN HORIZON',
-    accent: '#6752b5',
-    soft: '#eae5ff',
-  },
-];
 
 export default function JourneyPath() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -94,9 +44,6 @@ export default function JourneyPath() {
     );
     const phaseWords = Array.from(
       root.querySelectorAll<HTMLElement>('.journey-phase-word'),
-    );
-    const chapterScenes = Array.from(
-      root.querySelectorAll<HTMLElement>('.journey-chapter-scene'),
     );
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
     let length = 0;
@@ -148,22 +95,8 @@ export default function JourneyPath() {
       const motions = centres.map((center) =>
         scrollMotion(bounds.top + center, window.innerHeight),
       );
-      const activeIndex = centres.reduce((closest, center, index) => {
-        return Math.abs(center - readingY) <
-          Math.abs(centres[closest] - readingY)
-          ? index
-          : closest;
-      }, 0);
-      const activeTheme = chapterThemes[activeIndex];
-      root.style.setProperty('--journey-live-accent', activeTheme.accent);
-      root.style.setProperty('--journey-live-soft', activeTheme.soft);
-      root.dataset.chapter = activeTheme.key;
-      chapterScenes.forEach((scene, index) => {
-        scene.classList.toggle('is-active', index === activeIndex);
-      });
       const compact = window.innerWidth < 620;
       rows.forEach((row, i) => {
-        row.classList.toggle('is-reading', i === activeIndex);
         row.classList.toggle(
           'is-reached',
           preference.matches || centres[i] <= readingY,
@@ -298,22 +231,6 @@ export default function JourneyPath() {
 
   return (
     <div ref={rootRef} className="journey-route">
-      <div className="journey-chapter-backdrops" aria-hidden="true">
-        {chapterThemes.map((theme, index) => (
-          <div
-            key={theme.key}
-            className={`journey-chapter-scene scene-${theme.key} ${index === 0 ? 'is-active' : ''}`}
-          >
-            <span className="chapter-scene-index">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <span className="chapter-scene-label">{theme.label}</span>
-            <i className="scene-shape shape-a" />
-            <i className="scene-shape shape-b" />
-            <i className="scene-shape shape-c" />
-          </div>
-        ))}
-      </div>
       <div ref={sceneHostRef} className="journey-3d-stage" aria-hidden="true" />
       <div className="journey-atmosphere" aria-hidden="true">
         <span className="journey-phase-word phase-foundation">FOUNDATION</span>
@@ -327,9 +244,9 @@ export default function JourneyPath() {
       >
         <defs>
           <linearGradient id="journey-colour" x1="0" y1="0" x2="0" y2="1">
-            <stop className="journey-gradient-start" offset="0%" />
-            <stop className="journey-gradient-middle" offset="45%" />
-            <stop className="journey-gradient-end" offset="100%" />
+            <stop offset="0%" stopColor="#2448df" />
+            <stop offset="45%" stopColor="#2448df" />
+            <stop offset="100%" stopColor="#8270ea" />
           </linearGradient>
         </defs>
         <path ref={trackRef} className="journey-track" />
@@ -338,10 +255,10 @@ export default function JourneyPath() {
           <circle
             className="journey-head-aura"
             r="16"
-            fill="currentColor"
+            fill="#2448df"
             opacity=".12"
           />
-          <circle r="6" fill="currentColor" stroke="white" strokeWidth="2" />
+          <circle r="6" fill="#2448df" stroke="white" strokeWidth="2" />
         </g>
       </svg>
       <ol className="journey-stops">
