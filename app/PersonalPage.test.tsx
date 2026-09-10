@@ -37,16 +37,17 @@ describe('personal identity card', () => {
       stage.dispatchEvent(event);
     };
 
-    expect(stage.getAttribute('aria-valuetext')).toBe('Front of card');
+    const keyboardControl = container.querySelector('.card-rotation-input') as HTMLInputElement;
+    expect(keyboardControl.getAttribute('aria-label')).toContain('front');
 
     await act(async () => {
       pointer('pointerdown', 100);
       pointer('pointermove', 300);
       pointer('pointerup', 300);
     });
-    expect(stage.getAttribute('aria-valuetext')).toBe('Back of card');
+    expect(keyboardControl.getAttribute('aria-label')).toContain('back');
 
-    await act(async () => stage.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })));
-    expect(stage.getAttribute('aria-valuetext')).toBe('Front of card');
+    await act(async () => keyboardControl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })));
+    expect(keyboardControl.getAttribute('aria-label')).toContain('front');
   });
 });

@@ -3,7 +3,8 @@
 .personal-intro h1 { margin-block:30px; font-size:clamp(4rem,7.3vw,7.4rem); }
 .intro-typewriter,.name-typewriter { display:inline-block; position:relative; white-space:nowrap; vertical-align:bottom; }
 .intro-typewriter>span { display:inline-block; clip-path:inset(-.2em 100% -.25em 0); animation:intro-typing .78s steps(7,end) .16s both; }
-.name-typewriter>span { display:inline-block; clip-path:inset(-.2em 100% -.25em 0); transform-origin:left 70%; animation:name-typing 1.02s steps(8,end) .98s both,name-font-cycle .52s steps(1,end) .98s 3 both; }
+.name-typewriter>.name-letter { --letter-delay:calc(.98s + var(--letter-index) * .11s); display:inline-block; opacity:0; transform-origin:center 72%; animation:name-letter-appear .01s step-end var(--letter-delay) forwards,name-letter-font .44s steps(1,end) var(--letter-delay) both,name-letter-pop .44s cubic-bezier(.16,1,.3,1) var(--letter-delay) both; }
+.name-typewriter>.name-letter-space { width:.22em; }
 .intro-typewriter>i,.name-typewriter>i { position:absolute; z-index:2; top:.12em; left:0; width:.035em; height:.78em; border-radius:999px; background:currentColor; opacity:0; }
 .intro-typewriter>i { animation:intro-caret-track .78s steps(7,end) .16s both,typing-caret-blink .32s step-end .16s 3; }
 .name-typewriter>i { color:var(--primary); animation:name-caret-track 1.02s steps(8,end) .98s both,typing-caret-blink .3s step-end .98s 4; }
@@ -20,7 +21,7 @@
 .personal-work-link { display:inline-flex; align-items:center; gap:9px; margin-top:24px; padding-block:10px; color:var(--primary); font-size:.9375rem; }
 .personal-card-stage { --pointer-x:50%; --pointer-y:40%; --identity-tilt-x:0deg; --identity-tilt-y:0deg; --card-drag-angle:0deg; position:relative; width:100%; min-height:580px; perspective:1200px; transform-style:preserve-3d; touch-action:pan-y; user-select:none; cursor:grab; animation:personal-card-arrival 1.7s cubic-bezier(.16,1,.3,1) 3.48s both; }
 .personal-card-stage.is-dragging { cursor:grabbing; }
-.personal-card-stage:focus-visible { outline:3px solid var(--primary); outline-offset:10px; border-radius:22px; }
+.personal-card-stage:has(.card-rotation-input:focus-visible) { outline:3px solid var(--primary); outline-offset:10px; border-radius:22px; }
 .personal-card { position:relative; width:100%; height:530px; color:white; transform:rotateX(var(--identity-tilt-x)) rotateY(calc(var(--card-rest-angle,0deg) + var(--card-drag-angle) + var(--identity-tilt-y))) rotateZ(2.5deg); transform-style:preserve-3d; will-change:transform; transition:transform .85s cubic-bezier(.2,.75,.18,1); }
 .personal-card-stage.is-dragging .personal-card { transition:none; }
 .personal-card-face { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; isolation:isolate; border:1px solid #313b65; border-radius:22px; padding:30px; background:#070a12; box-shadow:0 28px 90px #203bc42b; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
@@ -35,6 +36,7 @@
 .card-edge-top,.card-edge-bottom { left:12px; width:calc(100% - 24px); height:14px; transform:rotateX(90deg); }
 .card-edge-top { top:-7px; }.card-edge-bottom { bottom:-7px; }
 .card-drag-hint { position:absolute; left:50%; bottom:2px; display:flex; align-items:center; gap:7px; color:#546070; font:.62rem var(--font-geist-mono),monospace; letter-spacing:.08em; transform:translateX(-50%); white-space:nowrap; pointer-events:none; }
+.card-rotation-input { position:absolute; left:50%; bottom:1px; width:160px; height:34px; margin:0; opacity:.001; transform:translateX(-50%); pointer-events:none; }
 .identity-scene { position:relative; display:grid; place-items:center; width:100%; min-height:330px; isolation:isolate; transform:translateZ(34px); padding:0; border:0; color:inherit; background:none; cursor:crosshair; animation:identity-scene-arrival .8s cubic-bezier(.16,1,.3,1) 4.2s both; }
 .identity-scene::before { content:''; position:absolute; width:230px; height:260px; border-radius:46% 46% 42% 42%; background:radial-gradient(circle at 50% 34%,#9f94ff 0 2%,transparent 3%),linear-gradient(150deg,#101939,#05070c 58%); border:1px solid #4e5eb6; box-shadow:0 0 55px #7668ff4d,0 0 100px #2448df24; }
 .identity-core { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; width:178px; height:220px; overflow:hidden; border-radius:45% 45% 38% 38%; color:white; background:linear-gradient(145deg,#8d7eff 0 5%,#17204e 5% 43%,#090d19 44% 100%); border:1px solid #9c91ff; box-shadow:0 0 30px #7b6df466 inset; transition:transform .7s cubic-bezier(.16,1,.3,1),filter .7s; }
@@ -178,22 +180,19 @@
 .personal-footer { margin-top:80px; border-color:#445064; }
 .personal-footer a { display:flex; align-items:center; gap:7px; }
 @keyframes intro-typing { from { clip-path:inset(-.2em 100% -.25em 0); } to { clip-path:inset(-.2em 0 -.25em 0); } }
-@keyframes name-typing { from { clip-path:inset(-.2em 100% -.25em 0); } to { clip-path:inset(-.2em 0 -.25em 0); } }
 @keyframes intro-caret-track { from { left:0; } to { left:100%; } }
 @keyframes name-caret-track { from { left:0; } to { left:100%; } }
 @keyframes typing-caret-blink { 0%,100% { opacity:0; } 50% { opacity:1; } }
-@keyframes name-font-cycle {
-  0% { font-family:Impact,'Arial Black',sans-serif; font-style:normal; font-weight:800; letter-spacing:-.12em; text-transform:uppercase; }
-  9% { font-family:'Courier New',monospace; font-style:normal; font-weight:700; letter-spacing:-.11em; text-transform:none; }
-  18% { font-family:Verdana,sans-serif; font-style:italic; font-weight:300; letter-spacing:-.1em; }
-  27% { font-family:'Times New Roman',serif; font-style:normal; font-weight:700; letter-spacing:-.09em; text-transform:uppercase; }
-  36% { font-family:'Trebuchet MS',sans-serif; font-style:normal; font-weight:300; letter-spacing:-.13em; text-transform:none; }
-  45% { font-family:Georgia,serif; font-style:normal; font-weight:700; letter-spacing:-.08em; }
-  54% { font-family:var(--font-geist-mono),monospace; font-style:normal; font-weight:450; letter-spacing:-.12em; }
-  63% { font-family:'Arial Narrow',Arial,sans-serif; font-style:italic; font-weight:700; letter-spacing:-.15em; text-transform:uppercase; }
-  72% { font-family:Garamond,Georgia,serif; font-style:normal; font-weight:400; letter-spacing:.01em; text-transform:none; }
-  81% { font-family:var(--font-geist-sans),sans-serif; font-style:normal; font-weight:650; letter-spacing:-.1em; }
-  90% { font-family:'Courier New',monospace; font-style:italic; font-weight:400; letter-spacing:-.08em; }
+@keyframes name-letter-appear { to { opacity:1; } }
+@keyframes name-letter-pop { 0% { filter:blur(5px); transform:translateY(.18em) scale(.68) rotate(-7deg); } 72% { filter:blur(0); transform:translateY(-.025em) scale(1.08) rotate(1deg); } 100% { filter:none; transform:none; } }
+@keyframes name-letter-font {
+  0% { font-family:Impact,'Arial Black',sans-serif; font-style:normal; font-weight:800; }
+  14% { font-family:'Courier New',monospace; font-style:normal; font-weight:700; }
+  28% { font-family:Verdana,sans-serif; font-style:italic; font-weight:300; }
+  42% { font-family:'Times New Roman',serif; font-style:normal; font-weight:700; }
+  56% { font-family:'Trebuchet MS',sans-serif; font-style:normal; font-weight:300; }
+  70% { font-family:var(--font-geist-mono),monospace; font-style:normal; font-weight:500; }
+  84% { font-family:'Arial Narrow',Arial,sans-serif; font-style:italic; font-weight:700; }
   100% { font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:400; letter-spacing:-.075em; text-transform:none; }
 }
 @keyframes connect-left { 0% { opacity:0; filter:blur(9px); transform:translateX(-.65em) rotateY(-55deg); } 72% { opacity:1; filter:blur(0); transform:translateX(.035em) rotateY(4deg); } 100% { opacity:1; filter:none; transform:none; } }
@@ -243,7 +242,8 @@
   .personal-card-stage { transform:none; animation:none; }
   .personal-card { transition:none; }
   .personal-card * { animation:none!important; transition:none!important; }
-  .intro-typewriter>span,.name-typewriter>span { clip-path:none; animation:none; }
+  .intro-typewriter>span { clip-path:none; animation:none; }
+  .name-typewriter>.name-letter { opacity:1; filter:none; transform:none; animation:none; }
   .intro-typewriter>i,.name-typewriter>i { display:none; }
   .connect-word,.title-connection i,.title-connection b,.title-connection b::after,.identity-scene,.personal-card-copy { animation:none; opacity:1; filter:none; clip-path:none; }
   .connect-word { transform:none; }

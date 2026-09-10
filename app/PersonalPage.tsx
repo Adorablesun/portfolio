@@ -164,7 +164,7 @@ export default function PersonalPage() {
     cardDrag.current = null;
   };
 
-  const turnCardWithKeyboard = (event: KeyboardEvent<HTMLElement>) => {
+  const turnCardWithKeyboard = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
     setCardAngle(value => value + (event.key === 'ArrowRight' ? 180 : -180));
@@ -179,7 +179,10 @@ export default function PersonalPage() {
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
           <h1 id="personal-title">
             <span className="intro-typewriter"><span>Hi, I’m</span><i aria-hidden="true" /></span>{' '}
-            <span className="serif-word name-typewriter"><span>Yu Yang.</span><i aria-hidden="true" /></span>
+            <span className="serif-word name-typewriter" aria-label="Yu Yang.">
+              {Array.from('Yu Yang.').map((character, index) => <span className={`name-letter${character === ' ' ? ' name-letter-space' : ''}`} style={{ '--letter-index': index } as CSSProperties} aria-hidden="true" key={`${character}-${index}`}>{character === ' ' ? '\u00a0' : character}</span>)}
+              <i aria-hidden="true" />
+            </span>
             <br />
             <span className="connect-title-reveal">
               <span className="connect-word connect-word-left">Let’s</span>
@@ -190,7 +193,7 @@ export default function PersonalPage() {
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
-        <aside className="personal-card-stage" aria-label="3D identity card. Drag horizontally to turn it. Use left and right arrow keys when focused." role="slider" aria-valuemin={0} aria-valuemax={1} aria-valuenow={cardBackVisible ? 1 : 0} aria-valuetext={cardBackVisible ? 'Back of card' : 'Front of card'} tabIndex={0} onPointerDown={startCardDrag} onPointerMove={moveCard} onPointerUp={finishCardDrag} onPointerCancel={finishCardDrag} onPointerLeave={resetIdentity} onKeyDown={turnCardWithKeyboard}>
+        <aside className="personal-card-stage" aria-label="3D identity card. Drag horizontally to turn it." onPointerDown={startCardDrag} onPointerMove={moveCard} onPointerUp={finishCardDrag} onPointerCancel={finishCardDrag} onPointerLeave={resetIdentity}>
           <div className="personal-card" style={cardStyle}>
             <div className="personal-card-face personal-card-front">
               <div className="identity-scene" aria-hidden="true">
@@ -220,6 +223,7 @@ export default function PersonalPage() {
             <i className="card-edge card-edge-top" aria-hidden="true" />
             <i className="card-edge card-edge-bottom" aria-hidden="true" />
           </div>
+          <input className="card-rotation-input" type="range" min="0" max="1" step="1" value={cardBackVisible ? 1 : 0} aria-label={`Card side: ${cardBackVisible ? 'back' : 'front'}. Use left and right arrow keys to turn.`} onChange={event => setCardAngle(Number(event.currentTarget.value) * 180)} onKeyDown={turnCardWithKeyboard} />
           <span className="card-drag-hint"><MoveHorizontal size={15} aria-hidden="true" /> DRAG TO TURN · {cardBackVisible ? 'BACK' : 'FRONT'}</span>
         </aside>
       </section>
