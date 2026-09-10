@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, MessageCircle, Move
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
+import ConnectionRibbon from './ConnectionRibbon';
 
 type Channel = {
   key: 'whatsapp' | 'email' | 'instagram' | 'linkedin';
@@ -190,12 +191,6 @@ export default function PersonalPage() {
     <SiteHeader personal />
     <main id="main" className="personal-page">
       <section className="personal-hero shell" aria-labelledby="personal-title">
-        <div className="hero-connection-field" aria-hidden="true">
-          <span className="hero-connection-line" />
-          <span className="hero-connection-node node-one" /><span className="hero-connection-node node-two" /><span className="hero-connection-node node-three" /><span className="hero-connection-node node-four" /><span className="hero-connection-node node-five" />
-          <span className="hero-connection-packet packet-one" /><span className="hero-connection-packet packet-two" />
-          <span className="hero-connection-label">SIGNAL / CONNECTION ACTIVE</span>
-        </div>
         <div className="personal-intro">
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
           <h1 id="personal-title">
@@ -210,6 +205,7 @@ export default function PersonalPage() {
               <span className="connect-word connect-word-right">connect.</span>
             </span>
           </h1>
+          <ConnectionRibbon />
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
@@ -249,7 +245,7 @@ export default function PersonalPage() {
         <div><span>UI / UX</span><span>Motion</span><span>AR / VR</span><span>AI + creativity</span></div>
       </section>
 
-      <section className="connect-section" aria-labelledby="connect-title">
+      <section id="contact-channels" className="connect-section" aria-labelledby="connect-title">
         <div className="shell">
           <div className="connect-heading">
             <div><p className="eyebrow"><Sparkles size={14} aria-hidden="true" /> OPEN THE CONVERSATION</p><h2 id="connect-title">Choose your<br /><span className="serif-word">way in.</span></h2></div>
