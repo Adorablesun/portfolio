@@ -45,6 +45,9 @@ export default function JourneyPath() {
     const phaseWords = Array.from(
       root.querySelectorAll<HTMLElement>('.journey-phase-word'),
     );
+    const cards = Array.from(
+      root.querySelectorAll<HTMLElement>('.journey-card'),
+    );
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
     let length = 0;
     let frame = 0;
@@ -105,10 +108,10 @@ export default function JourneyPath() {
         const note = row.querySelector<HTMLElement>('.journey-margin-note');
         if (!card || preference.matches) return;
         const { position, proximity } = motions[i];
-        const direction = row.classList.contains('on-right') ? 1 : -1;
+        const direction = row.classList.contains('on-right') ? -1 : 1;
         card.style.setProperty(
           '--scroll-x',
-          `${direction * position * (compact ? 14 : 42)}px`,
+          `${direction * (1 - proximity) * (compact ? 14 : 42)}px`,
         );
         card.style.setProperty(
           '--scroll-y',
@@ -167,6 +170,14 @@ export default function JourneyPath() {
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(paint);
     };
+    const moveCardLight = (event: PointerEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      const bounds = card.getBoundingClientRect();
+      const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+      const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+      card.style.setProperty('--card-light-x', `${x}%`);
+      card.style.setProperty('--card-light-y', `${y}%`);
+    };
     const onPreferenceChange = () => {
       if (preference.matches) stopScene();
       else void startScene();
@@ -213,6 +224,9 @@ export default function JourneyPath() {
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', measure);
     preference.addEventListener('change', onPreferenceChange);
+    cards.forEach((card) =>
+      card.addEventListener('pointermove', moveCardLight),
+    );
     measure();
     void startScene();
     void document.fonts.ready.then(measure);
@@ -224,6 +238,9 @@ export default function JourneyPath() {
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', measure);
       preference.removeEventListener('change', onPreferenceChange);
+      cards.forEach((card) =>
+        card.removeEventListener('pointermove', moveCardLight),
+      );
       stopScene();
       delete root.dataset.enhanced;
     };
