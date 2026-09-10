@@ -218,10 +218,6 @@ export default function PersonalPage() {
               <div className="rear-copy"><p>CURIOUS BY DESIGN</p><strong>Ideas become real<br />when people connect.</strong><span>UI/UX · MOTION · AR/VR · AI</span></div>
               <span className="rear-code">KUALA LUMPUR / 2026</span>
             </div>
-            <i className="card-edge card-edge-left" aria-hidden="true" />
-            <i className="card-edge card-edge-right" aria-hidden="true" />
-            <i className="card-edge card-edge-top" aria-hidden="true" />
-            <i className="card-edge card-edge-bottom" aria-hidden="true" />
           </div>
           <input className="card-rotation-input" type="range" min="0" max="1" step="1" value={cardBackVisible ? 1 : 0} aria-label={`Card side: ${cardBackVisible ? 'back' : 'front'}. Use left and right arrow keys to turn.`} onChange={event => setCardAngle(Number(event.currentTarget.value) * 180)} onKeyDown={turnCardWithKeyboard} />
           <span className="card-drag-hint"><MoveHorizontal size={15} aria-hidden="true" /> DRAG TO TURN · {cardBackVisible ? 'BACK' : 'FRONT'}</span>
