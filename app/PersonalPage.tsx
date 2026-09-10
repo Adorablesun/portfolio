@@ -135,7 +135,7 @@ export default function PersonalPage() {
       <section className="personal-hero shell" aria-labelledby="personal-title">
         <div className="personal-intro">
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
-          <h1 id="personal-title">Hi, I’m <span className="serif-word">Yu Yang.</span><br />Let’s connect.</h1>
+          <h1 id="personal-title">Hi, I’m <span className="serif-word name-font-reveal">Yu Yang.</span><br />Let’s connect.</h1>
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
