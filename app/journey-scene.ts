@@ -90,31 +90,26 @@ export function createJourneyScene(
   glow.scale.set(0.85, 0.85, 1);
   traveller.add(glow);
 
-  const trailMaterials: THREE.MeshBasicMaterial[] = [];
-  const trailGeometries = [-1, 0, 1].map((offset, index) => {
-    const trailCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-1.45, offset * 0.24, offset * 0.14),
-      new THREE.Vector3(-1.02, -offset * 0.13, -0.12 + index * 0.08),
-      new THREE.Vector3(-0.58, offset * 0.1, 0.08 - index * 0.05),
-      new THREE.Vector3(-0.24, -offset * 0.05, 0),
-      new THREE.Vector3(0, 0, 0),
-    ]);
-    const geometry = new THREE.TubeGeometry(
-      trailCurve,
-      48,
-      index === 1 ? 0.014 : 0.009,
-      5,
-      false,
-    );
-    const material = new THREE.MeshBasicMaterial({
+  const trailSampleCount = 42;
+  const trailSpan = 0.13;
+  const trailMaterials: THREE.LineBasicMaterial[] = [];
+  const trailLines = [-0.12, 0, 0.12].map((offset, index) => {
+    const positions = new Float32Array(trailSampleCount * 3);
+    const positionAttribute = new THREE.BufferAttribute(positions, 3);
+    positionAttribute.setUsage(THREE.DynamicDrawUsage);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', positionAttribute);
+    const material = new THREE.LineBasicMaterial({
       color: index === 1 ? 0x6f8cff : 0x9aaeff,
       transparent: true,
-      opacity: index === 1 ? 0.54 : 0.28,
+      opacity: index === 1 ? 0.5 : 0.24,
       depthWrite: false,
     });
+    const line = new THREE.Line(geometry, material);
+    line.frustumCulled = false;
     trailMaterials.push(material);
-    traveller.add(new THREE.Mesh(geometry, material));
-    return geometry;
+    scene.add(line);
+    return { geometry, offset, positionAttribute, positions };
   });
   scene.add(traveller);
 
@@ -152,6 +147,8 @@ export function createJourneyScene(
   const violet = new THREE.Color(0x8270ea);
   const travelPoint = new THREE.Vector3();
   const travelTangent = new THREE.Vector3();
+  const trailPoint = new THREE.Vector3();
+  const trailNormal = new THREE.Vector3();
   const cameraTarget = new THREE.Vector3();
 
   const resize = () => {
@@ -174,10 +171,30 @@ export function createJourneyScene(
     const activeIndex = Math.round(active);
     const pulse = 1 + Math.sin(time * 0.004) * 0.035;
     traveller.scale.setScalar(pulse);
-    curve.getTangentAt(progress, travelTangent);
-    traveller.rotation.z = Math.atan2(travelTangent.y, travelTangent.x);
-    traveller.rotation.x = Math.sin(time * 0.0012) * 0.1;
-    traveller.rotation.y = Math.sin(time * 0.0007) * 0.16;
+
+    trailLines.forEach(
+      ({ offset, positionAttribute, positions }, lineIndex) => {
+        for (let sample = 0; sample < trailSampleCount; sample++) {
+          const ratio = sample / (trailSampleCount - 1);
+          const sampleProgress = Math.max(
+            0,
+            progress - trailSpan * (1 - ratio),
+          );
+          curve.getPointAt(sampleProgress, trailPoint);
+          curve.getTangentAt(sampleProgress, travelTangent);
+          trailNormal.set(-travelTangent.y, travelTangent.x, 0).normalize();
+          const spread = Math.sin(ratio * Math.PI) * offset;
+          trailPoint.addScaledVector(trailNormal, spread);
+          trailPoint.z +=
+            offset * Math.sin(ratio * Math.PI * 2 + lineIndex * 0.8) * 0.45;
+          const writeIndex = sample * 3;
+          positions[writeIndex] = trailPoint.x;
+          positions[writeIndex + 1] = trailPoint.y;
+          positions[writeIndex + 2] = trailPoint.z;
+        }
+        positionAttribute.needsUpdate = true;
+      },
+    );
 
     const colour = blue.clone().lerp(violet, progress);
     signalMaterial.color.copy(colour).offsetHSL(0, -0.08, 0.2);
@@ -247,7 +264,7 @@ export function createJourneyScene(
       signalMaterial.dispose();
       glowMaterial.dispose();
       glowTexture.dispose();
-      trailGeometries.forEach((geometry) => geometry.dispose());
+      trailLines.forEach(({ geometry }) => geometry.dispose());
       trailMaterials.forEach((material) => material.dispose());
       particleGeometry.dispose();
       particleMaterial.dispose();
