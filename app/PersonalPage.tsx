@@ -1,5 +1,5 @@
-import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, Sparkles } from 'lucide-react';
-import type { PointerEvent, ReactNode } from 'react';
+import { ArrowLeft, ArrowUpRight, AtSign, BriefcaseBusiness, Camera, MessageCircle, RotateCw, Sparkles } from 'lucide-react';
+import { useState, type PointerEvent, type ReactNode } from 'react';
 import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
 
@@ -127,6 +127,7 @@ function ChannelCard({ channel, index }: { channel: Channel; index: number }) {
 export default function PersonalPage() {
   const base = import.meta.env.BASE_URL;
   const missing = channels.filter(channel => !channel.href).length;
+  const [cardFlipped, setCardFlipped] = useState(false);
 
   return <>
     <a className="skip-link" href="#main">Skip to introduction</a>
@@ -136,28 +137,52 @@ export default function PersonalPage() {
         <div className="personal-intro">
           <p className="eyebrow"><span className="small-dot" /> A LITTLE MORE PERSONAL</p>
           <h1 id="personal-title">
-            <span className="intro-typewriter">Hi, I’m</span>{' '}<span className="serif-word name-font-reveal">Yu Yang.</span>
+            <span className="intro-typewriter">Hi, I’m</span>{' '}<span className="serif-word name-typewriter">Yu Yang.</span>
             <br />
-            <span className="connect-title-reveal"><span>Let’s</span>{' '}<span>connect.</span></span>
+            <span className="connect-title-reveal">
+              <span className="connect-word connect-word-left">Let’s</span>
+              <span className="title-connection" aria-hidden="true"><i /><b /><i /></span>
+              <span className="connect-word connect-word-right">connect.</span>
+            </span>
           </h1>
           <p className="personal-lede">I’m a multimedia design student who enjoys turning ideas into visual identities, moving images, and digital experiences. I’m currently exploring where UI/UX, immersive technology, and AI can meet thoughtful human-centred design.</p>
           <a className="personal-work-link" href={`${base}#work`}>See what I’m creating <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
-        <aside className="personal-card" aria-label="Interactive identity card for Ong Yu Yang" onPointerMove={moveIdentity} onPointerLeave={resetIdentity}>
-          <button className="identity-scene" type="button" aria-label="Reveal Ong Yu Yang’s digital identity">
-            <div className="identity-orbit orbit-one" />
-            <div className="identity-orbit orbit-two" />
-            <div className="identity-core"><span>OY</span><small>CREATIVE SIGNAL</small></div>
-            <div className="identity-card-back">
-              <span className="card-corner">OY<small>✦</small></span>
-              <span className="card-emblem"><b>OY</b><small>CREATIVE WILD</small></span>
-              <span className="card-corner card-corner-bottom">OY<small>✦</small></span>
+        <aside className="personal-card-stage" aria-label="Flippable 3D identity card for Ong Yu Yang" onPointerMove={moveIdentity} onPointerLeave={resetIdentity}>
+          <div className={`personal-card${cardFlipped ? ' is-flipped' : ''}`}>
+            <div className="personal-card-face personal-card-front">
+              <button className="card-face-trigger" type="button" aria-label="Turn identity card to the back" aria-hidden={cardFlipped} tabIndex={cardFlipped ? -1 : 0} onClick={() => setCardFlipped(true)} />
+              <div className="identity-scene" aria-hidden="true">
+                <div className="identity-orbit orbit-one" />
+                <div className="identity-orbit orbit-two" />
+                <div className="identity-core"><span>OY</span><small>CREATIVE SIGNAL</small></div>
+                <div className="identity-card-back">
+                  <span className="card-corner">OY<small>✦</small></span>
+                  <span className="card-emblem"><b>OY</b><small>CREATIVE WILD</small></span>
+                  <span className="card-corner card-corner-bottom">OY<small>✦</small></span>
+                </div>
+                <div className="identity-shards">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
+                <div className="identity-scan" />
+                <span className="identity-hint">HOVER TO REVEAL / CLICK TO TURN</span>
+              </div>
+              <div className="personal-card-copy"><span className="personal-status"><i /> CURRENTLY LEARNING & CREATING</span><strong>{portfolio.name}</strong><p>Year 3 · Semester 2<br />Asia Pacific University</p></div>
             </div>
-            <div className="identity-shards">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
-            <div className="identity-scan" />
-            <span className="identity-hint">MOVE CURSOR / REVEAL</span>
+            <div className="personal-card-face personal-card-rear">
+              <button className="card-face-trigger" type="button" aria-label="Turn identity card to the front" aria-hidden={!cardFlipped} tabIndex={cardFlipped ? 0 : -1} onClick={() => setCardFlipped(false)} />
+              <span className="rear-corner">OY / 01</span>
+              <div className="rear-orbit" aria-hidden="true"><i /><i /><i /></div>
+              <div className="rear-monogram"><span>OY</span><small>DIGITAL IDENTITY</small></div>
+              <div className="rear-copy"><p>CURIOUS BY DESIGN</p><strong>Ideas become real<br />when people connect.</strong><span>UI/UX · MOTION · AR/VR · AI</span></div>
+              <span className="rear-code">KUALA LUMPUR / 2026</span>
+            </div>
+            <i className="card-edge card-edge-left" aria-hidden="true" />
+            <i className="card-edge card-edge-right" aria-hidden="true" />
+            <i className="card-edge card-edge-top" aria-hidden="true" />
+            <i className="card-edge card-edge-bottom" aria-hidden="true" />
+          </div>
+          <button className="card-turn-control" type="button" onClick={() => setCardFlipped(value => !value)} aria-pressed={cardFlipped}>
+            <RotateCw size={14} aria-hidden="true" /> {cardFlipped ? 'SHOW FRONT' : 'TURN TO BACK'}
           </button>
-          <div className="personal-card-copy"><span className="personal-status"><i /> CURRENTLY LEARNING & CREATING</span><strong>{portfolio.name}</strong><p>Year 3 · Semester 2<br />Asia Pacific University</p></div>
         </aside>
       </section>
 
