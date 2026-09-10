@@ -38,20 +38,23 @@
 .journey-navigation { position:sticky; top:0; z-index:5; background:#f8f9fbeb; backdrop-filter:blur(14px); padding-block:14px; border-bottom:1px solid var(--border); }
 .journey-navigation nav { gap:25px; }
 .journey-navigation h2 { max-width:210px; line-height:1.5; }
-.journey-route { position:relative; overflow-x:clip; }
+.journey-route { position:relative; overflow-x:clip; isolation:isolate; }
+.journey-3d-stage { position:sticky; top:0; width:100%; height:100svh; margin-bottom:-100svh; z-index:0; pointer-events:none; opacity:0; transition:opacity .6s ease; }
+.journey-3d-stage[data-ready] { opacity:.58; }
+.journey-3d-stage canvas { display:block; width:100%; height:100%; }
 .journey-atmosphere { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
 .journey-phase-word { position:absolute; left:50%; transform:translate(-50%,var(--phase-shift,0)); color:#233bbf; opacity:.018; font:700 clamp(5rem,16vw,13rem)/.8 var(--font-geist-sans),sans-serif; letter-spacing:-.09em; white-space:nowrap; will-change:transform,opacity; transition:opacity .15s linear; }
 .phase-foundation { top:7%; }
 .phase-present { top:31%; }
 .phase-future { top:64%; color:#6553ac; }
-.journey-svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
+.journey-svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:1; }
 .journey-track,.journey-fill { fill:none; stroke-width:2; stroke-linecap:round; }
 .journey-track { stroke:#d4d9e6; }
 .journey-fill { stroke:url(#journey-colour); stroke-width:3; }
 .journey-head { opacity:0; will-change:transform; }
 .journey-head-aura { transform-box:fill-box; transform-origin:center; animation:journey-pulse 1.5s ease-in-out infinite; }
 .journey-stops { list-style:none; padding:38px 0 0; margin:0; }
-.journey-row { position:relative; z-index:1; display:flex; align-items:center; min-height:340px; padding-block:40px; scroll-margin-top:90px; }
+.journey-row { position:relative; z-index:2; display:flex; align-items:center; min-height:340px; padding-block:40px; scroll-margin-top:90px; }
 .journey-card { width:calc(50% - 88px); padding:30px; border:1px solid var(--border); border-radius:14px; background:var(--background); position:relative; will-change:transform,filter; }
 .on-right .journey-card { margin-left:auto; }
 .journey-marker { width:42px; height:42px; border-radius:50%; position:absolute; left:calc(50% - 21px); top:calc(50% - 21px); background:var(--background); border:1px solid #bbc5df; display:flex; align-items:center; justify-content:center; color:var(--primary); font: .75rem var(--font-geist-mono),monospace; z-index:2; transform:scale(var(--marker-scale,1)); transition:background .35s,color .35s,box-shadow .35s; will-change:transform; }
@@ -91,6 +94,7 @@
 @keyframes journey-pulse { 50% { transform:scale(1.65); opacity:.04; } }
 @media(max-width:850px) { .journey-card { width:calc(50% - 50px); padding:24px; } .journey-margin-note { max-width:130px; line-height:1.8; left:calc(50% + 65px); } .on-right .journey-margin-note { right:calc(50% + 65px); } .on-left>.journey-marker,.on-right>.journey-marker { left:calc(50% - 21px); } }
 @media(max-width:620px) {
+  .journey-3d-stage[data-ready] { opacity:.4; }
   .journey-navigation { display:block; padding-block:12px 4px; }
   .journey-navigation h2 { max-width:none; font-size:.8125rem; }
   .journey-navigation nav { gap:26px; font-size:.8125rem; }
@@ -104,6 +108,7 @@
   .journey-end h3 { font-size:2.2rem; }
 }
 @media(prefers-reduced-motion:reduce) {
+  .journey-3d-stage { display:none; }
   .academic-page *, .academic-page *::before, .academic-page *::after { animation:none!important; transition:none!important; }
   .journey-route[data-enhanced] .journey-row .journey-card { opacity:1; transform:none; filter:none; }
   .journey-marker { transform:none; }

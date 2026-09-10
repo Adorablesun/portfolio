@@ -26,12 +26,14 @@ const marginNotes = [
 
 export default function JourneyPath() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const sceneHostRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<SVGPathElement>(null);
   const fillRef = useRef<SVGPathElement>(null);
   const headRef = useRef<SVGGElement>(null);
 
   useEffect(() => {
     const root = rootRef.current!;
+    const sceneHost = sceneHostRef.current!;
     const track = trackRef.current!;
     const fill = fillRef.current!;
     const head = headRef.current!;
@@ -48,6 +50,30 @@ export default function JourneyPath() {
     let frame = 0;
     let disposed = false;
     let centres: number[] = [];
+    let scene: import('./journey-scene').JourneySceneController | undefined;
+    let sceneToken = 0;
+    let latestProgress = 0;
+    let latestVisibility = false;
+
+    const stopScene = () => {
+      sceneToken += 1;
+      scene?.dispose();
+      scene = undefined;
+      sceneHost.replaceChildren();
+      delete sceneHost.dataset.fallback;
+    };
+    const startScene = async () => {
+      if (preference.matches || scene) return;
+      const token = ++sceneToken;
+      try {
+        const { createJourneyScene } = await import('./journey-scene');
+        if (disposed || token !== sceneToken || preference.matches) return;
+        scene = createJourneyScene(sceneHost);
+        scene.setProgress(latestProgress, latestVisibility);
+      } catch {
+        sceneHost.dataset.fallback = 'true';
+      }
+    };
 
     const paint = () => {
       frame = 0;
@@ -61,6 +87,10 @@ export default function JourneyPath() {
       const point = track.getPointAtLength(distance);
       head.setAttribute('transform', `translate(${point.x} ${point.y})`);
       head.style.opacity = preference.matches ? '0' : '1';
+      const routeVisible = bounds.top < window.innerHeight && bounds.bottom > 0;
+      latestProgress = length ? distance / length : 0;
+      latestVisibility = routeVisible;
+      scene?.setProgress(latestProgress, routeVisible);
 
       const motions = centres.map((center) =>
         scrollMotion(bounds.top + center, window.innerHeight),
@@ -125,8 +155,6 @@ export default function JourneyPath() {
             motions[index].proximity > best.proximity ? motions[index] : best,
           motions[group[0]],
         );
-        const routeVisible =
-          bounds.top < window.innerHeight && bounds.bottom > 0;
         word.style.opacity = routeVisible
           ? String(0.018 + strongest.proximity * 0.065)
           : '0';
@@ -138,6 +166,11 @@ export default function JourneyPath() {
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(paint);
+    };
+    const onPreferenceChange = () => {
+      if (preference.matches) stopScene();
+      else void startScene();
+      measure();
     };
     const measure = () => {
       if (disposed) return;
@@ -179,8 +212,9 @@ export default function JourneyPath() {
     markers.forEach((marker) => resize.observe(marker));
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', measure);
-    preference.addEventListener('change', measure);
+    preference.addEventListener('change', onPreferenceChange);
     measure();
+    void startScene();
     void document.fonts.ready.then(measure);
     return () => {
       disposed = true;
@@ -189,13 +223,15 @@ export default function JourneyPath() {
       reveal?.disconnect();
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', measure);
-      preference.removeEventListener('change', measure);
+      preference.removeEventListener('change', onPreferenceChange);
+      stopScene();
       delete root.dataset.enhanced;
     };
   }, []);
 
   return (
     <div ref={rootRef} className="journey-route">
+      <div ref={sceneHostRef} className="journey-3d-stage" aria-hidden="true" />
       <div className="journey-atmosphere" aria-hidden="true">
         <span className="journey-phase-word phase-foundation">FOUNDATION</span>
         <span className="journey-phase-word phase-present">PRESENT</span>
