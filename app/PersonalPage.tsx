@@ -4,12 +4,30 @@ import { contactProfiles, portfolio } from './portfolio';
 import SiteHeader from './SiteHeader';
 
 type Channel = {
+  key: 'whatsapp' | 'email' | 'instagram' | 'linkedin';
   label: string;
   detail: string;
   href: string;
   icon: ReactNode;
   note: string;
 };
+
+function moveChannel(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const card = event.currentTarget;
+  const bounds = card.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width;
+  const y = (event.clientY - bounds.top) / bounds.height;
+  card.style.setProperty('--channel-x', `${x * 100}%`);
+  card.style.setProperty('--channel-y', `${y * 100}%`);
+  card.style.setProperty('--channel-rx', `${(0.5 - y) * 4}deg`);
+  card.style.setProperty('--channel-ry', `${(x - 0.5) * 5}deg`);
+}
+
+function resetChannel(event: PointerEvent<HTMLElement>) {
+  event.currentTarget.style.setProperty('--channel-rx', '0deg');
+  event.currentTarget.style.setProperty('--channel-ry', '0deg');
+}
 
 function moveIdentity(event: PointerEvent<HTMLElement>) {
   if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -30,6 +48,7 @@ function resetIdentity(event: PointerEvent<HTMLElement>) {
 
 const channels: Channel[] = [
   {
+    key: 'whatsapp',
     label: 'WhatsApp',
     detail: contactProfiles.whatsapp || 'Phone number needed',
     href: contactProfiles.whatsapp ? `https://wa.me/${contactProfiles.whatsapp.replace(/\D/g, '')}` : '',
@@ -37,6 +56,7 @@ const channels: Channel[] = [
     note: 'For a quick hello or project conversation',
   },
   {
+    key: 'email',
     label: 'Email',
     detail: contactProfiles.email || 'Email address needed',
     href: contactProfiles.email ? `mailto:${contactProfiles.email}` : '',
@@ -44,6 +64,7 @@ const channels: Channel[] = [
     note: 'For briefs, opportunities, and longer messages',
   },
   {
+    key: 'instagram',
     label: 'Instagram',
     detail: contactProfiles.instagram ? '@oyy_0208' : 'Profile link needed',
     href: contactProfiles.instagram,
@@ -51,6 +72,7 @@ const channels: Channel[] = [
     note: 'For visual experiments and work in progress',
   },
   {
+    key: 'linkedin',
     label: 'LinkedIn',
     detail: contactProfiles.linkedin ? 'Ong Yu Yang on LinkedIn' : 'Profile link needed',
     href: contactProfiles.linkedin,
@@ -59,17 +81,47 @@ const channels: Channel[] = [
   },
 ];
 
+function ChannelVisual({ type }: { type: Channel['key'] }) {
+  if (type === 'whatsapp') return <div className="channel-visual visual-whatsapp" aria-hidden="true">
+    <span className="radar-ring radar-one" /><span className="radar-ring radar-two" />
+    <span className="radar-core"><MessageCircle /></span>
+    <span className="signal-status"><i /> SIGNAL OPEN</span>
+  </div>;
+
+  if (type === 'email') return <div className="channel-visual visual-email" aria-hidden="true">
+    <span className="mail-signal"><i /><i /><i /></span>
+    <span className="mail-window"><b>NEW MESSAGE</b><i /><i /><i /></span>
+    <span className="mail-cursor" />
+  </div>;
+
+  if (type === 'instagram') return <div className="channel-visual visual-instagram" aria-hidden="true">
+    <span className="aperture-ring"><i /><i /><i /><i /><i /><i /></span>
+    <span className="aperture-core"><Camera /></span>
+    <span className="aperture-count">08 / 24</span>
+  </div>;
+
+  return <div className="channel-visual visual-linkedin" aria-hidden="true">
+    <svg viewBox="0 0 320 150"><path d="M28 116 102 62l58 43 70-72 62 50" /><path d="m102 62 38-32 90 3" /></svg>
+    {Array.from({ length: 6 }, (_, index) => <i key={index} />)}
+    <span className="network-label">LET’S BUILD / TOGETHER</span>
+  </div>;
+}
+
 function ChannelCard({ channel, index }: { channel: Channel; index: number }) {
   const content = <>
-    <span className="channel-number">{String(index + 1).padStart(2, '0')}</span>
-    <span className="channel-icon">{channel.icon}</span>
-    <span className="channel-copy"><strong>{channel.label}</strong><span>{channel.note}</span><small>{channel.detail}</small></span>
-    {channel.href ? <ArrowUpRight className="channel-arrow" aria-hidden="true" /> : <span className="channel-needed">DETAIL NEEDED</span>}
+    <span className="channel-glow" aria-hidden="true" />
+    <span className="channel-top"><span className="channel-number">{String(index + 1).padStart(2, '0')}</span><span className="channel-availability"><i /> {channel.href ? 'AVAILABLE' : 'OFFLINE'}</span></span>
+    <ChannelVisual type={channel.key} />
+    <span className="channel-bottom">
+      <span className="channel-icon">{channel.icon}</span>
+      <span className="channel-copy"><strong>{channel.label}</strong><span>{channel.note}</span><small>{channel.detail}</small></span>
+      {channel.href ? <span className="channel-open">OPEN <ArrowUpRight className="channel-arrow" aria-hidden="true" /></span> : <span className="channel-needed">DETAIL NEEDED</span>}
+    </span>
   </>;
 
   return channel.href
-    ? <a className="channel-card is-ready" href={channel.href} target={channel.href.startsWith('mailto:') ? undefined : '_blank'} rel={channel.href.startsWith('mailto:') ? undefined : 'noreferrer'}>{content}</a>
-    : <div className="channel-card is-missing" aria-disabled="true">{content}</div>;
+    ? <a className={`channel-card channel-${channel.key} is-ready`} href={channel.href} target={channel.href.startsWith('mailto:') ? undefined : '_blank'} rel={channel.href.startsWith('mailto:') ? undefined : 'noreferrer'} onPointerMove={moveChannel} onPointerLeave={resetChannel}>{content}</a>
+    : <div className={`channel-card channel-${channel.key} is-missing`} aria-disabled="true">{content}</div>;
 }
 
 export default function PersonalPage() {
