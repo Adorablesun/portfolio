@@ -92,6 +92,11 @@ export default function PersonalPage() {
             <div className="identity-orbit orbit-one" />
             <div className="identity-orbit orbit-two" />
             <div className="identity-core"><span>OY</span><small>CREATIVE SIGNAL</small></div>
+            <div className="identity-card-back">
+              <span className="card-corner">OY<small>✦</small></span>
+              <span className="card-emblem"><b>OY</b><small>CREATIVE WILD</small></span>
+              <span className="card-corner card-corner-bottom">OY<small>✦</small></span>
+            </div>
             <div className="identity-shards">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
             <div className="identity-scan" />
             <span className="identity-hint">MOVE CURSOR / REVEAL</span>
