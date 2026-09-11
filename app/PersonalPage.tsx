@@ -145,18 +145,36 @@ export default function PersonalPage() {
 
   useEffect(() => {
     const section = connectSection.current;
-    if (!section || !('IntersectionObserver' in window)) {
-      setConnectActive(true);
-      return;
+    if (!section) return;
+    const Observer = (window as Window & { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver;
+
+    if (!Observer) {
+      const updateTheme = () => {
+        const bounds = section.getBoundingClientRect();
+        const readingLine = window.innerHeight * 0.5;
+        setConnectActive(bounds.top <= readingLine && bounds.bottom >= readingLine);
+      };
+      updateTheme();
+      window.addEventListener('scroll', updateTheme, { passive: true });
+      window.addEventListener('resize', updateTheme);
+      return () => {
+        window.removeEventListener('scroll', updateTheme);
+        window.removeEventListener('resize', updateTheme);
+      };
     }
 
-    const observer = new IntersectionObserver(
+    const observer = new Observer(
       ([entry]) => setConnectActive(entry.isIntersecting),
       { rootMargin: '-35% 0px -35% 0px', threshold: 0 },
     );
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('personal-dark-mode', connectActive);
+    return () => document.body.classList.remove('personal-dark-mode');
+  }, [connectActive]);
 
   const startCardDrag = (event: PointerEvent<HTMLElement>) => {
     if (!event.isPrimary) return;
