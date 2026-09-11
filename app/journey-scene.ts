@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export type JourneySceneController = {
-  setProgress: (progress: number, visible: boolean) => void;
+  setProgress: (progress: number, visible: boolean, finale?: number) => void;
   dispose: () => void;
 };
 
@@ -61,7 +61,11 @@ export function createJourneyScene(
 
   const traveller = new THREE.Group();
   const signalGeometry = new THREE.SphereGeometry(0.065, 20, 14);
-  const signalMaterial = new THREE.MeshBasicMaterial({ color: 0x8aa1ff });
+  const signalMaterial = new THREE.MeshBasicMaterial({
+    color: 0x8aa1ff,
+    transparent: true,
+    opacity: 1,
+  });
   traveller.add(new THREE.Mesh(signalGeometry, signalMaterial));
 
   const glowCanvas = document.createElement('canvas');
@@ -137,14 +141,68 @@ export function createJourneyScene(
   const particles = new THREE.Points(particleGeometry, particleMaterial);
   scene.add(particles);
 
+  const finale = new THREE.Group();
+  const finalePoint = curve.getPoint(1);
+  finale.position.copy(finalePoint);
+  const finaleKnotGeometry = new THREE.TorusKnotGeometry(
+    0.64,
+    0.13,
+    144,
+    18,
+    2,
+    3,
+  );
+  const finaleKnotMaterial = new THREE.MeshBasicMaterial({
+    color: 0xa493ff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  finale.add(new THREE.Mesh(finaleKnotGeometry, finaleKnotMaterial));
+  const finaleCoreGeometry = new THREE.IcosahedronGeometry(0.32, 2);
+  const finaleCoreMaterial = new THREE.MeshBasicMaterial({
+    color: 0xd9f96a,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  });
+  finale.add(new THREE.Mesh(finaleCoreGeometry, finaleCoreMaterial));
+  const finaleRingGeometry = new THREE.TorusGeometry(0.96, 0.012, 6, 96);
+  const finaleRings = Array.from({ length: 3 }, (_, index) => {
+    const material = new THREE.MeshBasicMaterial({
+      color: index === 1 ? 0xd9f96a : 0x9282ff,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const ring = new THREE.Mesh(finaleRingGeometry, material);
+    ring.rotation.set(
+      Math.PI / 2 + index * 0.55,
+      index * 0.72,
+      index * 0.38,
+    );
+    finale.add(ring);
+    return { ring, material };
+  });
+  finale.scale.setScalar(0.01);
+  finale.visible = false;
+  scene.add(finale);
+
   let targetProgress = 0;
   let progress = 0;
+  let targetFinale = 0;
+  let finaleIntensity = 0;
   let isVisible = false;
   let frame = 0;
   let disposed = false;
   let previousTime = performance.now();
   const blue = new THREE.Color(0x2448df);
   const violet = new THREE.Color(0x8270ea);
+  const fogLight = new THREE.Color(0xf8f9fb);
+  const fogDark = new THREE.Color(0x090d18);
   const travelPoint = new THREE.Vector3();
   const travelTangent = new THREE.Vector3();
   const trailPoint = new THREE.Vector3();
@@ -164,6 +222,8 @@ export function createJourneyScene(
     const delta = Math.min((time - previousTime) / 1000, 0.05);
     previousTime = time;
     progress += (targetProgress - progress) * Math.min(1, delta * 7.5);
+    finaleIntensity +=
+      (targetFinale - finaleIntensity) * Math.min(1, delta * 4.5);
     curve.getPointAt(progress, travelPoint);
     traveller.position.copy(travelPoint);
 
@@ -199,10 +259,15 @@ export function createJourneyScene(
     const colour = blue.clone().lerp(violet, progress);
     signalMaterial.color.copy(colour).offsetHSL(0, -0.08, 0.2);
     glowMaterial.color.copy(colour).offsetHSL(0, -0.15, 0.18);
+    signalMaterial.opacity = 1 - finaleIntensity * 0.72;
+    glowMaterial.opacity = 0.72 + finaleIntensity * 0.16;
+    routeMaterial.opacity = 0.22 * (1 - finaleIntensity * 0.62);
     trailMaterials.forEach((material, index) => {
       material.color
         .copy(colour)
         .offsetHSL(0, -0.08, index === 1 ? 0.16 : 0.26);
+      material.opacity =
+        (index === 1 ? 0.5 : 0.24) * (1 - finaleIntensity * 0.58);
     });
 
     gates.forEach(({ gate, material }, index) => {
@@ -210,10 +275,32 @@ export function createJourneyScene(
       const reached = index <= activeIndex;
       gate.scale.setScalar(1 + closeness * 0.12);
       gate.rotation.z += delta * (reached ? 0.1 : 0.035) * (index % 2 ? -1 : 1);
-      material.opacity = 0.025 + closeness * 0.16 + (reached ? 0.025 : 0);
+      material.opacity =
+        (0.025 + closeness * 0.16 + (reached ? 0.025 : 0)) *
+        (1 - finaleIntensity * 0.45);
     });
 
-    camera.position.set(travelPoint.x * 0.22, travelPoint.y + 0.1, 7.6);
+    finale.visible = finaleIntensity > 0.002;
+    const finaleEase = finaleIntensity * finaleIntensity * (3 - 2 * finaleIntensity);
+    finale.scale.setScalar(0.18 + finaleEase * 1.06);
+    finale.rotation.x = time * 0.00016 + finaleEase * 0.35;
+    finale.rotation.y = time * 0.00024;
+    finale.rotation.z = Math.sin(time * 0.00045) * 0.14;
+    finaleKnotMaterial.opacity = finaleEase * 0.62;
+    finaleCoreMaterial.opacity = finaleEase * 0.76;
+    finaleRings.forEach(({ ring, material }, index) => {
+      ring.rotation.z += delta * (0.16 + index * 0.05) * (index % 2 ? -1 : 1);
+      material.opacity = finaleEase * (index === 1 ? 0.34 : 0.22);
+    });
+    particleMaterial.opacity = 0.18 + finaleEase * 0.18;
+    const fog = scene.fog as THREE.FogExp2;
+    fog.color.lerpColors(fogLight, fogDark, finaleEase);
+
+    camera.position.set(
+      travelPoint.x * 0.22,
+      travelPoint.y + 0.1,
+      7.6 - finaleEase * 2.15,
+    );
     cameraTarget.set(travelPoint.x * 0.44, travelPoint.y, travelPoint.z);
     camera.lookAt(cameraTarget);
     particles.rotation.y = progress * 0.3;
@@ -237,8 +324,9 @@ export function createJourneyScene(
   resize();
 
   return {
-    setProgress(nextProgress, visible) {
+    setProgress(nextProgress, visible, nextFinale = 0) {
       targetProgress = clamp01(nextProgress);
+      targetFinale = clamp01(nextFinale);
       isVisible = visible;
       if (!visible) {
         cancelAnimationFrame(frame);
@@ -268,6 +356,12 @@ export function createJourneyScene(
       trailMaterials.forEach((material) => material.dispose());
       particleGeometry.dispose();
       particleMaterial.dispose();
+      finaleKnotGeometry.dispose();
+      finaleKnotMaterial.dispose();
+      finaleCoreGeometry.dispose();
+      finaleCoreMaterial.dispose();
+      finaleRingGeometry.dispose();
+      finaleRings.forEach(({ material }) => material.dispose());
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();

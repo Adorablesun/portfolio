@@ -30,6 +30,7 @@ export default function JourneyPath() {
   const trackRef = useRef<SVGPathElement>(null);
   const fillRef = useRef<SVGPathElement>(null);
   const headRef = useRef<SVGGElement>(null);
+  const finaleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const root = rootRef.current!;
@@ -37,6 +38,7 @@ export default function JourneyPath() {
     const track = trackRef.current!;
     const fill = fillRef.current!;
     const head = headRef.current!;
+    const finale = finaleRef.current!;
     const svg = track.ownerSVGElement!;
     const rows = Array.from(root.querySelectorAll<HTMLElement>('.journey-row'));
     const markers = Array.from(
@@ -57,6 +59,7 @@ export default function JourneyPath() {
     let sceneToken = 0;
     let latestProgress = 0;
     let latestVisibility = false;
+    let latestFinale = 0;
 
     const stopScene = () => {
       sceneToken += 1;
@@ -72,7 +75,7 @@ export default function JourneyPath() {
         const { createJourneyScene } = await import('./journey-scene');
         if (disposed || token !== sceneToken || preference.matches) return;
         scene = createJourneyScene(sceneHost);
-        scene.setProgress(latestProgress, latestVisibility);
+        scene.setProgress(latestProgress, latestVisibility, latestFinale);
       } catch {
         sceneHost.dataset.fallback = 'true';
       }
@@ -93,7 +96,22 @@ export default function JourneyPath() {
       const routeVisible = bounds.top < window.innerHeight && bounds.bottom > 0;
       latestProgress = length ? distance / length : 0;
       latestVisibility = routeVisible;
-      scene?.setProgress(latestProgress, routeVisible);
+      const finaleBounds = finale.getBoundingClientRect();
+      const finaleProgress = Math.max(
+        0,
+        Math.min(
+          1,
+          (window.innerHeight * 0.9 - finaleBounds.top) /
+            (window.innerHeight * 0.52),
+        ),
+      );
+      const finaleActive =
+        finaleProgress > 0.04 && finaleBounds.bottom > window.innerHeight * 0.22;
+      latestFinale = finaleActive ? finaleProgress : 0;
+      root.style.setProperty('--finale-progress', latestFinale.toFixed(3));
+      root.classList.toggle('is-finale', finaleActive);
+      document.body.classList.toggle('academic-finale-mode', finaleActive);
+      scene?.setProgress(latestProgress, routeVisible, latestFinale);
 
       const motions = centres.map((center) =>
         scrollMotion(bounds.top + center, window.innerHeight),
@@ -243,11 +261,19 @@ export default function JourneyPath() {
       );
       stopScene();
       delete root.dataset.enhanced;
+      root.classList.remove('is-finale');
+      document.body.classList.remove('academic-finale-mode');
     };
   }, []);
 
   return (
     <div ref={rootRef} className="journey-route">
+      <div className="journey-finale-backdrop" aria-hidden="true">
+        <i className="finale-aurora finale-aurora-one" />
+        <i className="finale-aurora finale-aurora-two" />
+        <span className="finale-grid" />
+        <span className="finale-orbit" />
+      </div>
       <div ref={sceneHostRef} className="journey-3d-stage" aria-hidden="true" />
       <div className="journey-atmosphere" aria-hidden="true">
         <span className="journey-phase-word phase-foundation">FOUNDATION</span>
@@ -330,15 +356,18 @@ export default function JourneyPath() {
           </li>
         ))}
       </ol>
-      <div className="journey-end">
-        <span className="journey-marker" aria-hidden="true">
-          <ArrowDown size={18} />
-        </span>
-        <p>Still learning. Still exploring.</p>
-        <h3>
-          The path keeps <span className="serif-word">going.</span>
-        </h3>
-        <span>Future chapters are aspirations, with room to evolve.</span>
+      <div ref={finaleRef} className="journey-end">
+        <div className="journey-finale-content">
+          <span className="journey-marker" aria-hidden="true">
+            <ArrowDown size={18} />
+          </span>
+          <p>Still learning. Still exploring.</p>
+          <h3>
+            The path keeps <span className="serif-word">going.</span>
+          </h3>
+          <span>Future chapters are aspirations, with room to evolve.</span>
+          <small aria-hidden="true">OPEN ENDED · ALWAYS IN MOTION</small>
+        </div>
       </div>
     </div>
   );
