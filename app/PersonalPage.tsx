@@ -38,6 +38,25 @@ function resetChannel(event: PointerEvent<HTMLElement>) {
   event.currentTarget.style.setProperty('--channel-ry', '0deg');
 }
 
+function moveInterest(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const tile = event.currentTarget;
+  const bounds = tile.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width;
+  const y = (event.clientY - bounds.top) / bounds.height;
+  tile.style.setProperty('--interest-x', `${x * 100}%`);
+  tile.style.setProperty('--interest-y', `${y * 100}%`);
+  tile.style.setProperty('--interest-rx', `${(0.5 - y) * 5}deg`);
+  tile.style.setProperty('--interest-ry', `${(x - 0.5) * 6}deg`);
+}
+
+function resetInterest(event: PointerEvent<HTMLElement>) {
+  event.currentTarget.style.setProperty('--interest-rx', '0deg');
+  event.currentTarget.style.setProperty('--interest-ry', '0deg');
+  event.currentTarget.style.setProperty('--interest-x', '50%');
+  event.currentTarget.style.setProperty('--interest-y', '50%');
+}
+
 function moveIdentity(event: PointerEvent<HTMLElement>) {
   if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const card = event.currentTarget;
@@ -89,6 +108,17 @@ const channels: Channel[] = [
     note: 'For my professional journey and experience',
   },
 ];
+
+const creativeInterests = [
+  { label: 'UI / UX', detail: 'Human-centred interfaces', glyph: '⌗', accent: '#4f6fff', size: 'standard' },
+  { label: 'Motion', detail: 'Movement with intention', glyph: '↝', accent: '#9a68ff', size: 'standard' },
+  { label: 'AR / VR', detail: 'Immersive spatial experiences', glyph: '◎', accent: '#21a7a2', size: 'wide' },
+  { label: 'AI + creativity', detail: 'New tools for visual ideas', glyph: '✦', accent: '#7b5cff', size: 'wide' },
+  { label: 'Unity / C#', detail: 'Interactive real-time worlds', glyph: 'U#', accent: '#3157d9', size: 'standard' },
+  { label: 'Graphic design', detail: 'Identity and visual systems', glyph: '◩', accent: '#db5c8a', size: 'standard' },
+  { label: 'Video editing', detail: 'Rhythm, sequence, and story', glyph: '▶', accent: '#e06a42', size: 'wide' },
+  { label: '3D modelling', detail: 'Form, space, and material', glyph: '◇', accent: '#2b8fc4', size: 'wide' },
+] as const;
 
 function ChannelVisual({ type }: { type: Channel['key'] }) {
   if (type === 'whatsapp') return <div className="channel-visual visual-whatsapp" aria-hidden="true">
@@ -275,9 +305,20 @@ export default function PersonalPage() {
         </aside>
       </section>
 
-      <section className="personal-values shell" aria-label="Creative interests">
-        <p>WHAT I’M DRAWN TO</p>
-        <div><span>UI / UX</span><span>Motion</span><span>AR / VR</span><span>AI + creativity</span></div>
+      <section className="personal-values shell" aria-labelledby="creative-spectrum-title">
+        <div className="values-heading">
+          <p><span className="small-dot" /> CREATIVE SPECTRUM</p>
+          <h2 id="creative-spectrum-title">One curiosity,<br /><span className="serif-word">many mediums.</span></h2>
+          <span className="values-note">A growing mix of design, motion, spatial, and interactive tools I’m drawn to.</span>
+        </div>
+        <div className="interest-grid">
+          {creativeInterests.map((interest, index) => <article className={`interest-card interest-${interest.size}`} style={{ '--interest-accent': interest.accent } as CSSProperties} onPointerMove={moveInterest} onPointerLeave={resetInterest} key={interest.label}>
+            <span className="interest-glow" aria-hidden="true" />
+            <span className="interest-top"><small>{String(index + 1).padStart(2, '0')}</small><i aria-hidden="true">{interest.glyph}</i></span>
+            <span className="interest-copy"><strong>{interest.label}</strong><small>{interest.detail}</small></span>
+            <span className="interest-signal" aria-hidden="true" />
+          </article>)}
+        </div>
       </section>
 
       <section ref={connectSection} id="contact-channels" className={`connect-section${connectActive ? ' is-dark' : ''}`} aria-labelledby="connect-title">
