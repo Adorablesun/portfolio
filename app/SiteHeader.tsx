@@ -1,10 +1,13 @@
 import { type PointerEvent, useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Asterisk } from 'lucide-react';
+import { ArrowUpRight, Asterisk, ChevronDown } from 'lucide-react';
 import { portfolio } from './portfolio';
 
-export default function SiteHeader({ academic = false, personal = false }: { academic?: boolean; personal?: boolean }) {
+type ReservedPage = 'resume' | 'showreel' | 'lab';
+
+export default function SiteHeader({ academic = false, personal = false, current }: { academic?: boolean; personal?: boolean; current?: ReservedPage }) {
   const base = import.meta.env.BASE_URL;
-  const home = academic || personal ? base : '';
+  const home = academic || personal || current ? base : '';
+  const exploreCurrent = Boolean(current);
   const header = useRef<HTMLElement | null>(null);
   const frame = useRef<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -46,6 +49,15 @@ export default function SiteHeader({ academic = false, personal = false }: { aca
       <a href={`${home}#work`}><span className="nav-label">Work</span><span className="nav-index">01</span></a>
       <a href={`${home}#about`}><span className="nav-label">About</span><span className="nav-index">02</span></a>
       <a href={`${base}academic/`} aria-current={academic ? 'page' : undefined}><span className="nav-label">Academic</span><span className="nav-index">03</span></a>
+      <details className={`nav-explore${exploreCurrent ? ' is-current' : ''}`}>
+        <summary><span className="nav-label">Explore</span><ChevronDown size={14} aria-hidden="true" /></summary>
+        <div className="nav-explore-menu">
+          <a className="nav-mobile-only" href={`${home}#about`}><span><b>About</b><small>Profile and approach</small></span><span className="nav-index">02</span></a>
+          <a href={`${base}resume/`} aria-current={current === 'resume' ? 'page' : undefined}><span><b>Résumé</b><small>Downloadable profile</small></span><span className="nav-index">04</span></a>
+          <a href={`${base}showreel/`} aria-current={current === 'showreel' ? 'page' : undefined}><span><b>Showreel</b><small>Motion in one cut</small></span><span className="nav-index">05</span></a>
+          <a href={`${base}lab/`} aria-current={current === 'lab' ? 'page' : undefined}><span><b>Playground</b><small>Experiments and tests</small></span><span className="nav-index">06</span></a>
+        </div>
+      </details>
       <a className="nav-cta" href={`${base}personal/`} aria-current={personal ? 'page' : undefined}><span className="nav-talk-long">Let’s talk</span><span className="nav-talk-short">Talk</span><ArrowUpRight size={17} aria-hidden="true" /></a>
     </nav>
     <span className="nav-glass-caustics" aria-hidden="true"><i /><i /></span>
