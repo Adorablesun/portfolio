@@ -134,9 +134,14 @@ function ChannelVisual({ type }: { type: Channel['key'] }) {
   </div>;
 
   if (type === 'instagram') return <div className="channel-visual visual-instagram" aria-hidden="true">
-    <span className="aperture-ring"><i /><i /><i /><i /><i /><i /></span>
-    <span className="aperture-core"><InstagramIcon /></span>
-    <span className="aperture-count">08 / 24</span>
+    <span className="insta-gallery">
+      <i className="insta-frame insta-frame-one" />
+      <i className="insta-frame insta-frame-two" />
+      <i className="insta-frame insta-frame-three" />
+    </span>
+    <span className="insta-badge"><InstagramIcon /></span>
+    <span className="insta-scan" />
+    <span className="insta-count">VISUAL LOG · 08 / 24</span>
   </div>;
 
   return <div className="channel-visual visual-linkedin" aria-hidden="true">
