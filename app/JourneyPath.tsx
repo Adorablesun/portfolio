@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { ArrowDown, ArrowUpRight, Sparkles } from 'lucide-react';
+import { Infinity as InfinityIcon, ArrowUpRight, Sparkles } from 'lucide-react';
 import { academicJourney, futureJourney } from './portfolio';
 import { buildJourneyPath, distanceAtY, scrollMotion } from './journey-path';
 
@@ -359,7 +359,7 @@ export default function JourneyPath() {
       <div ref={finaleRef} className="journey-end">
         <div className="journey-finale-content">
           <span className="journey-marker" aria-hidden="true">
-            <ArrowDown size={18} />
+            <InfinityIcon size={22} />
           </span>
           <p>Still learning. Still exploring.</p>
           <h3>

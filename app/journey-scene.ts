@@ -286,8 +286,8 @@ export function createJourneyScene(
     finale.rotation.x = time * 0.00016 + finaleEase * 0.35;
     finale.rotation.y = time * 0.00024;
     finale.rotation.z = Math.sin(time * 0.00045) * 0.14;
-    finaleKnotMaterial.opacity = finaleEase * 0.62;
-    finaleCoreMaterial.opacity = finaleEase * 0.76;
+    finaleKnotMaterial.opacity = finaleEase * 0.18;
+    finaleCoreMaterial.opacity = finaleEase * 0.25;
     finaleRings.forEach(({ ring, material }, index) => {
       ring.rotation.z += delta * (0.16 + index * 0.05) * (index % 2 ? -1 : 1);
       material.opacity = finaleEase * (index === 1 ? 0.34 : 0.22);

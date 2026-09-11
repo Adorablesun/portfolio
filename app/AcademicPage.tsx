@@ -20,7 +20,6 @@ export default function AcademicPage() {
         <div className="section-top journey-navigation"><h2 id="timeline-title">The path so far & beyond</h2><nav aria-label="Journey chapters"><a href="#beginnings">Beginnings</a><a href="#now">Now</a><a href="#future">Future <ArrowUpRight size={14} aria-hidden="true" /></a></nav></div>
         <JourneyPath />
       </section>
-      <section className="academic-next shell"><div><p className="eyebrow">LEARNING INTO MAKING</p><h2>The next chapter<br />is <span className="serif-word">creative.</span></h2></div><a href={`${base}#work`} className="round-link">Explore my work <span><ArrowUpRight size={22} aria-hidden="true" /></span></a></section>
     </main>
     <footer className="academic-footer shell"><span>{portfolio.name} · Multimedia design</span><a href={`${base}#main`}><ArrowLeft size={15} aria-hidden="true" /> Back to portfolio</a></footer>
   </>;
