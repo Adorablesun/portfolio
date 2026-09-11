@@ -2,7 +2,7 @@
 
 A standalone React + TypeScript + Vite portfolio. Hosting uses GitHub Pages; no GPT plugin, account, or runtime is needed to run the website.
 
-The shared navigation stays at the top of every page as a highly translucent liquid-glass surface with refracted color, moving caustics, bright inner edges, and a pointer-responsive highlight. Its wordmark, links, numbered droplets, and CTA share a consistent control rail, while a live page-progress signal runs along the lower edge. The light and dark themes use separate glass tints so the page remains visible through the surface without sacrificing readable controls. Active-page, hover, mobile, dark-theme, and reduced-motion states are included.
+The shared navigation starts as a flat bar with a fine bottom divider, then rounds into a floating panel after scrolling. The panel uses a highly translucent liquid-glass surface with refracted color, moving caustics, bright inner edges, and a pointer-responsive highlight. Its wordmark, links, numbered droplets, and CTA share a consistent control rail, while a live page-progress signal runs along the lower edge. The light and dark themes use separate glass tints so the page remains visible through the surface without sacrificing readable controls. Active-page, hover, mobile, dark-theme, and reduced-motion states are included.
 
 ## Local development
 
